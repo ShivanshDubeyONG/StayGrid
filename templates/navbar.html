@@ -1,8 +1,93 @@
-<nav>
-    <a href="/">Home</a>
-    <a href="/dashboard/">Dashboard</a>
-    <a href="/hotels/">Hotels</a>
-    <a href="/hotels/listing/">Hotel Listings</a>
-    <a href="/vendors/">Vendors</a>
-    <a href="/vendors/dashboard/">Vendor Dashboard</a>
+<nav class="site-nav" id="site-nav">
+
+    <div class="container nav-inner">
+
+        <a href="{% url 'home' %}" class="brand">
+            <span class="brand-mark">S</span>
+            <span>StayGrid</span>
+        </a>
+
+        <div class="nav-links" id="nav-links">
+
+            <a
+                href="{% url 'hotel_list' %}"
+                class="nav-link"
+            >
+                Explore Stays
+            </a>
+
+            {% if user.is_authenticated %}
+
+                <a
+                    href="{% url 'my_bookings' %}"
+                    class="nav-link"
+                >
+                    My Bookings
+                </a>
+
+                <a
+                    href="{% url 'profile' %}"
+                    class="nav-link"
+                >
+                    Profile
+                </a>
+
+            {% endif %}
+
+            {% if user.is_authenticated and user.vendor_profile %}
+
+                <a
+                    href="{% url 'vendor_dashboard' %}"
+                    class="nav-link"
+                >
+                    Vendor Portal
+                </a>
+
+            {% endif %}
+
+        </div>
+
+        <div class="nav-actions">
+
+            {% if user.is_authenticated %}
+
+                <a
+                    href="{% url 'logout' %}"
+                    class="btn btn-secondary nav-logout"
+                >
+                    Log out
+                </a>
+
+            {% else %}
+
+                <a
+                    href="{% url 'login' %}"
+                    class="nav-link nav-login"
+                >
+                    Log in
+                </a>
+
+                <a
+                    href="{% url 'register' %}"
+                    class="btn btn-primary"
+                >
+                    Get started
+                </a>
+
+            {% endif %}
+
+            <button
+                type="button"
+                class="mobile-menu-button"
+                id="mobile-menu-button"
+                aria-label="Toggle navigation"
+                aria-expanded="false"
+            >
+                ☰
+            </button>
+
+        </div>
+
+    </div>
+
 </nav>

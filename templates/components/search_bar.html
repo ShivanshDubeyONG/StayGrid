@@ -1,0 +1,115 @@
+<form
+    action="{% url 'hotel_list' %}"
+    method="get"
+    class="search-panel"
+    data-search-form
+>
+
+    <div class="search-field search-destination">
+
+        <span class="search-icon">
+            ⌖
+        </span>
+
+        <div>
+
+            <label for="search-location">
+                Destination
+            </label>
+
+            <input
+                id="search-location"
+                type="text"
+                name="location"
+                value="{{ location|default:'' }}"
+                placeholder="Where are you going?"
+            >
+
+        </div>
+
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+
+        <span class="search-icon">
+            ◷
+        </span>
+
+        <div>
+
+            <label for="search-checkin">
+                Check in
+            </label>
+
+            <input
+                id="search-checkin"
+                type="date"
+                name="check_in"
+                min="{% now 'Y-m-d' %}"
+            >
+
+        </div>
+
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field">
+
+        <span class="search-icon">
+            ◷
+        </span>
+
+        <div>
+
+            <label for="search-checkout">
+                Check out
+            </label>
+
+            <input
+                id="search-checkout"
+                type="date"
+                name="check_out"
+            >
+
+        </div>
+
+    </div>
+
+    <div class="search-divider"></div>
+
+    <div class="search-field search-guests">
+
+        <span class="search-icon">
+            ♙
+        </span>
+
+        <div>
+
+            <label for="search-guests">
+                Guests
+            </label>
+
+            <input
+                id="search-guests"
+                type="number"
+                name="guests"
+                min="1"
+                value="2"
+            >
+
+        </div>
+
+    </div>
+
+    <button
+        class="search-submit"
+        type="submit"
+        aria-label="Search stays"
+    >
+        →
+    </button>
+
+</form>

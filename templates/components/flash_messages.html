@@ -1,0 +1,30 @@
+{% if messages %}
+
+<div class="flash-container">
+
+    {% for message in messages %}
+
+        <div
+            class="flash-message flash-{{ message.tags|default:'info' }}"
+            role="alert"
+        >
+
+            <span>
+                {{ message }}
+            </span>
+
+            <button
+                type="button"
+                class="flash-close"
+                aria-label="Dismiss"
+            >
+                ×
+            </button>
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endif %}

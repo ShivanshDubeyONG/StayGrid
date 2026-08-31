@@ -1,0 +1,107 @@
+<article class="hotel-card">
+
+    <a
+        href="{% url 'hotel_detail' hotel.id %}"
+        class="hotel-card-image"
+        aria-label="View {{ hotel.name }}"
+    >
+
+        {% with image=hotel.images.all|first %}
+
+            {% if image and image.image %}
+                <img
+                    src="{{ image.image.url }}"
+                    alt="{{ hotel.name }}"
+                    loading="lazy"
+                >
+            {% else %}
+                <div class="hotel-image-placeholder">
+                    <span>StayGrid</span>
+                </div>
+            {% endif %}
+
+        {% endwith %}
+
+        <div class="hotel-card-badge">
+            {% if hotel.stay_score %}
+                {{ hotel.stay_score|floatformat:1 }} Stay Score
+            {% else %}
+                Featured Stay
+            {% endif %}
+        </div>
+
+    </a>
+
+    <div class="hotel-card-body">
+
+        <div class="hotel-card-heading">
+
+            <div>
+
+                <h3 class="hotel-card-title">
+                    <a href="{% url 'hotel_detail' hotel.id %}">
+                        {{ hotel.name }}
+                    </a>
+                </h3>
+
+                <p class="hotel-card-location">
+                    {{ hotel.location }}
+                </p>
+
+            </div>
+
+            <div class="hotel-rating">
+
+                <span class="rating-star">
+                    ★
+                </span>
+
+                <span>
+                    {{ hotel.star_rating|default:"—" }}
+                </span>
+
+            </div>
+
+        </div>
+
+        {% if hotel.description %}
+
+            <p class="hotel-card-description">
+                {{ hotel.description|truncatechars:105 }}
+            </p>
+
+        {% endif %}
+
+        <div class="hotel-card-meta">
+
+            <div class="hotel-price">
+
+                <strong>
+                    ₹{{ hotel.base_price|floatformat:0 }}
+                </strong>
+
+                <span>
+                    / night
+                </span>
+
+            </div>
+
+            <span class="hotel-rooms">
+
+                {% with rooms=hotel.rooms.all %}
+
+                    {% if rooms %}
+                        Rooms available
+                    {% else %}
+                        Check availability
+                    {% endif %}
+
+                {% endwith %}
+
+            </span>
+
+        </div>
+
+    </div>
+
+</article>

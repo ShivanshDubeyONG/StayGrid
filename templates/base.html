@@ -1,95 +1,73 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}StayGrid{% endblock %}</title>
 
     <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
+        name="description"
+        content="Discover stays worth remembering with StayGrid."
     >
 
-    <title>
-        {% block title %}
-            StayGrid
-        {% endblock %}
-    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+        rel="stylesheet"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/variables.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/base.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/components.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/animations.css' %}"
+    >
+
+    <link
+        rel="stylesheet"
+        href="{% static 'css/responsive.css' %}"
+    >
+
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
-<nav>
+    {% include "components/navbar.html" %}
 
-    <a href="{% url 'home' %}">
-        StayGrid
-    </a>
+    <main id="main-content">
 
-    <a href="{% url 'hotel_list' %}">
-        Browse Hotels
-    </a>
+        {% include "components/flash_messages.html" %}
 
-    {% if user.is_authenticated %}
+        {% block content %}
+        {% endblock %}
 
-        <a href="{% url 'profile' %}">
-            Profile
-        </a>
+    </main>
 
-        <a href="{% url 'logout' %}">
-            Logout
-        </a>
+    {% include "components/footer.html" %}
 
-    {% else %}
+    <script src="{% static 'js/main.js' %}"></script>
+    <script src="{% static 'js/navbar.js' %}"></script>
+    <script src="{% static 'js/animations.js' %}"></script>
 
-        <a href="{% url 'login' %}">
-            Login
-        </a>
-
-        <a href="{% url 'register' %}">
-            Register
-        </a>
-
-    {% endif %}
-
-    <a href="{% url 'vendor_login' %}">
-        Vendor Portal
-    </a>
-
-</nav>
-
-
-{% if messages %}
-
-    {% for message in messages %}
-
-        <div>
-            {{ message }}
-        </div>
-
-    {% endfor %}
-
-{% endif %}
-
-
-<main>
-
-    {% block content %}
-
-        <h1>
-            Welcome to StayGrid
-        </h1>
-
-        <p>
-            Find hotels, compare rooms and book your stay.
-        </p>
-
-        <a href="{% url 'hotel_list' %}">
-            Explore Hotels
-        </a>
-
-    {% endblock %}
-
-</main>
+    {% block extra_js %}{% endblock %}
 
 </body>
-
 </html>

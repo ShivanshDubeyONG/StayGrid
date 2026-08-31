@@ -1,0 +1,82 @@
+<footer class="site-footer">
+
+    <div class="container footer-inner">
+
+        <div>
+
+            <div class="footer-brand">
+                StayGrid
+            </div>
+
+            <p class="footer-text">
+                Discover stays worth remembering.
+                Built for travellers and property owners.
+            </p>
+
+        </div>
+
+        <div class="footer-columns">
+
+            <div>
+
+                <span class="footer-heading">
+                    Explore
+                </span>
+
+                <a href="{% url 'hotel_list' %}">
+                    Stays
+                </a>
+
+                <a href="{% url 'home' %}#destinations">
+                    Destinations
+                </a>
+
+            </div>
+
+            <div>
+
+                <span class="footer-heading">
+                    Account
+                </span>
+
+                {% if user.is_authenticated %}
+
+                    <a href="{% url 'my_bookings' %}">
+                        Bookings
+                    </a>
+
+                    <a href="{% url 'profile' %}">
+                        Profile
+                    </a>
+
+                {% else %}
+
+                    <a href="{% url 'login' %}">
+                        Log in
+                    </a>
+
+                    <a href="{% url 'register' %}">
+                        Register
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+
+        <span>
+            © {% now "Y" %} StayGrid
+        </span>
+
+        <span>
+            Built with Django
+        </span>
+
+    </div>
+
+</footer>
