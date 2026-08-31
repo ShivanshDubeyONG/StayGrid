@@ -19,9 +19,10 @@
     --color-dark: #171717;
     --color-dark-soft: #252525;
 
-    --color-accent: #e85d3f;
-    --color-accent-dark: #c9472e;
-    --color-accent-soft: #f8e5df;
+    /* StayGrid accent */
+    --color-accent: #e9d8a6;
+    --color-accent-soft: #f4eedb;
+    --color-accent-deep: #c9b56f;
 
     --color-success: #287a55;
     --color-success-soft: #e5f2eb;

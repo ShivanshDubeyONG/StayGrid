@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+
+{% block title %}My Bookings — StayGrid{% endblock %}
+
+{% block content %}
+
+<section class="page-section bookings-page">
+
+    <div class="container">
+
+        <div class="page-heading">
+
+            <span class="eyebrow">YOUR TRIPS</span>
+
+            <h1>My bookings.</h1>
+
+            <p>
+                Everything you've booked through StayGrid,
+                all in one place.
+            </p>
+
+        </div>
+
+
+        {% if bookings %}
+
+            <div class="bookings-list">
+
+                {% for booking in bookings %}
+
+                    <article class="booking-card">
+
+                        <div class="booking-main">
+
+                            <div class="booking-number">
+                                BOOKING #{{ booking.id }}
+                            </div>
+
+                            <h2>
+                                {{ booking.room.hotel.name }}
+                            </h2>
+
+                            <p class="booking-location">
+                                {{ booking.room.hotel.location }}
+                            </p>
+
+                            <div class="booking-details">
+
+                                <div>
+                                    <span>ROOM</span>
+                                    <strong>
+                                        {{ booking.room.name }}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>CHECK IN</span>
+                                    <strong>
+                                        {{ booking.check_in|date:"d M Y" }}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>CHECK OUT</span>
+                                    <strong>
+                                        {{ booking.check_out|date:"d M Y" }}
+                                    </strong>
+                                </div>
+
+                                <div>
+                                    <span>GUESTS</span>
+                                    <strong>
+                                        {{ booking.guests }}
+                                    </strong>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+
+                        <div class="booking-side">
+
+                            <div class="booking-status">
+                                {{ booking.status|default:"Confirmed" }}
+                            </div>
+
+                            <div class="booking-price">
+                                ₹{{ booking.total_price }}
+                            </div>
+
+                            <a
+                                href="{% url 'booking_success' booking.id %}"
+                                class="btn btn-secondary"
+                            >
+                                View booking
+                            </a>
+
+                        </div>
+
+                    </article>
+
+                {% endfor %}
+
+            </div>
+
+        {% else %}
+
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ✦
+                </div>
+
+                <span class="eyebrow">
+                    NO TRIPS YET
+                </span>
+
+                <h2>
+                    Your next stay is waiting.
+                </h2>
+
+                <p>
+                    Explore StayGrid and find somewhere
+                    worth remembering.
+                </p>
+
+                <a
+                    href="{% url 'hotel_list' %}"
+                    class="btn btn-primary"
+                >
+                    Explore stays
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

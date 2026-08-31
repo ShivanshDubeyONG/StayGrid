@@ -3,9 +3,45 @@
     <div class="container nav-inner">
 
         <a href="{% url 'home' %}" class="brand">
-            <span class="brand-mark">S</span>
-            <span>StayGrid</span>
+
+            <span class="brand-mark" aria-hidden="true">
+
+                <svg
+                    viewBox="0 0 48 48"
+                    width="21"
+                    height="21"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                >
+                    <circle
+                        cx="24"
+                        cy="24"
+                        r="17"
+                        stroke="currentColor"
+                        stroke-width="2.2"
+                    />
+
+                    <path
+                        d="M29 19L25.8 25.8L19 29L22.2 22.2L29 19Z"
+                        fill="currentColor"
+                    />
+
+                    <circle
+                        cx="24"
+                        cy="24"
+                        r="1.8"
+                        fill="currentColor"
+                    />
+                </svg>
+
+            </span>
+
+            <span class="brand-text">
+                StayGrid
+            </span>
+
         </a>
+
 
         <div class="nav-links" id="nav-links">
 
@@ -15,6 +51,7 @@
             >
                 Explore Stays
             </a>
+
 
             {% if user.is_authenticated %}
 
@@ -35,6 +72,7 @@
             {% endif %}
 
         </div>
+
 
         <div class="nav-actions">
 
@@ -64,6 +102,7 @@
                 </a>
 
             {% endif %}
+
 
             <button
                 type="button"

@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block title %}
+    Profile — StayGrid
+{% endblock %}
+
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/profile.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="profile-page">
+
+    <div class="container">
+
+
+        <!-- =================================================
+             PAGE INTRO
+             ================================================= -->
+
+        <header class="page-heading">
+
+            <span class="eyebrow">
+                Account
+            </span>
+
+            <h1>
+                Your profile.
+            </h1>
+
+            <p>
+                Manage your StayGrid account details.
+            </p>
+
+        </header>
+
+
+        <!-- =================================================
+             PROFILE CONTENT
+             ================================================= -->
+
+        <div class="profile-layout">
+
+
+            <!-- =================================================
+                 IDENTITY CARD
+                 ================================================= -->
+
+            <aside class="profile-card">
+
+
+                <div
+                    class="profile-avatar"
+                    aria-label="StayGrid"
+                >
+
+                    <svg
+                        viewBox="0 0 48 48"
+                        width="32"
+                        height="32"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden="true"
+                    >
+
+                        <circle
+                            cx="24"
+                            cy="24"
+                            r="18"
+                            stroke="currentColor"
+                            stroke-width="2"
+                        />
+
+                        <path
+                            d="M29.8 18.2L26.2 26.2L18.2 29.8L21.8 21.8L29.8 18.2Z"
+                            fill="currentColor"
+                        />
+
+                        <circle
+                            cx="24"
+                            cy="24"
+                            r="2"
+                            fill="currentColor"
+                        />
+
+                    </svg>
+
+                </div>
+
+
+                <h2>
+                    {{ request.user.username }}
+                </h2>
+
+                <p class="profile-username">
+                    @{{ request.user.username }}
+                </p>
+
+
+                <div class="profile-meta">
+
+                    <div>
+
+                        <span>
+                            Member since
+                        </span>
+
+                        <strong>
+                            {{ request.user.date_joined|date:"M Y" }}
+                        </strong>
+
+                    </div>
+
+
+                    <div>
+
+                        <span>
+                            Email
+                        </span>
+
+                        <strong>
+                            {% if request.user.email %}
+                                {{ request.user.email }}
+                            {% else %}
+                                No email added
+                            {% endif %}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+
+            <!-- =================================================
+                 EDIT CARD
+                 ================================================= -->
+
+            <div class="form-card">
+
+
+                <div class="section-header">
+
+                    <span class="eyebrow">
+                        Personal details
+                    </span>
+
+                    <h2>
+                        Edit your information
+                    </h2>
+
+                </div>
+
+
+                <form
+                    method="post"
+                    action="{% url 'profile' %}"
+                >
+
+                    {% csrf_token %}
+
+
+                    <div class="form-grid">
+
+
+                        <div class="form-group">
+
+                            <label for="first_name">
+                                First name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="first_name"
+                                name="first_name"
+                                value="{{ request.user.first_name }}"
+                                placeholder="Your first name"
+                                autocomplete="given-name"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label for="last_name">
+                                Last name
+                            </label>
+
+                            <input
+                                type="text"
+                                id="last_name"
+                                name="last_name"
+                                value="{{ request.user.last_name }}"
+                                placeholder="Your last name"
+                                autocomplete="family-name"
+                            >
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="email">
+                            Email address
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            name="email"
+                            value="{{ request.user.email }}"
+                            placeholder="you@example.com"
+                            autocomplete="email"
+                        >
+
+                    </div>
+
+
+                    <div class="form-group">
+
+                        <label for="phone_number">
+                            Phone number
+                        </label>
+
+                        <input
+                            type="text"
+                            id="phone_number"
+                            name="phone_number"
+                            value="{{ profile.phone_number }}"
+                            placeholder="Your phone number"
+                            autocomplete="tel"
+                        >
+
+                    </div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Save changes
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
