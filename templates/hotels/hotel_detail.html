@@ -1,0 +1,268 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+    {{ hotel.name }} — StayGrid
+{% endblock %}
+
+{% block extra_css %}
+
+<link
+    rel="stylesheet"
+    href="{% static 'css/hotel_detail.css' %}"
+>
+
+{% endblock %}
+
+
+{% block content %}
+
+<section class="hotel-detail-page">
+
+    <div class="container">
+
+        <a
+            href="{% url 'hotel_list' %}"
+            class="back-link"
+        >
+            ← Back to stays
+        </a>
+
+
+        <div class="hotel-detail-header">
+
+            <div>
+
+                <span class="section-eyebrow">
+                    STAYGRID STAY
+                </span>
+
+                <h1>
+                    {{ hotel.name }}
+                </h1>
+
+                <p class="hotel-detail-location">
+                    ⌖ {{ hotel.location }}
+                </p>
+
+            </div>
+
+            <div class="detail-rating">
+
+                <strong>
+                    ★ {{ hotel.star_rating|default:"—" }}
+                </strong>
+
+                <span>
+                    Guest rating
+                </span>
+
+            </div>
+
+        </div>
+
+
+        <div class="hotel-gallery">
+
+            {% with images=hotel.images.all %}
+
+                {% for image in images|slice:":5" %}
+
+                    <div class="gallery-image">
+
+                        <img
+                            src="{{ image.image.url }}"
+                            alt="{{ hotel.name }}"
+                            loading="lazy"
+                        >
+
+                    </div>
+
+                {% empty %}
+
+                    <div class="gallery-placeholder">
+                        StayGrid
+                    </div>
+
+                {% endfor %}
+
+            {% endwith %}
+
+        </div>
+
+
+        <div class="hotel-detail-layout">
+
+            <main>
+
+                <div class="stay-score-panel">
+
+                    <div class="score-copy">
+
+                        <span class="section-eyebrow">
+                            STAY SCORE
+                        </span>
+
+                        <h2>
+                            A smarter way to judge a stay.
+                        </h2>
+
+                        <p>
+                            StayGrid combines the signals that
+                            actually matter when choosing where
+                            to spend the night.
+                        </p>
+
+                    </div>
+
+                    <div
+                        class="score-ring"
+                        style="--score: {{ stay_score|default:0 }};"
+                    >
+                        <span>
+                            {{ stay_score|default:"—" }}
+                        </span>
+                    </div>
+
+                </div>
+
+
+                {% if hotel.description %}
+
+                    <section class="detail-section">
+
+                        <span class="section-eyebrow">
+                            ABOUT THE STAY
+                        </span>
+
+                        <p class="hotel-description">
+                            {{ hotel.description }}
+                        </p>
+
+                    </section>
+
+                {% endif %}
+
+
+                <section class="detail-section">
+
+                    <div class="detail-section-heading">
+
+                        <div>
+
+                            <span class="section-eyebrow">
+                                ROOMS
+                            </span>
+
+                            <h2>
+                                Choose your room.
+                            </h2>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="rooms-list">
+
+                        {% for room in hotel.rooms.all %}
+
+                            <article class="room-card">
+
+                                <div class="room-icon">
+                                    ◇
+                                </div>
+
+                                <div class="room-main">
+
+                                    <h3>
+                                        {{ room.room_type }}
+                                    </h3>
+
+                                    <p>
+                                        Comfortable accommodation
+                                        for your stay.
+                                    </p>
+
+                                </div>
+
+                                <div class="room-action">
+
+                                    <strong>
+                                        ₹{{ room.price|floatformat:0 }}
+                                    </strong>
+
+                                    <span>
+                                        / night
+                                    </span>
+
+                                    <a
+                                        href="{% url 'book_room' room.id %}"
+                                        class="btn btn-primary"
+                                    >
+                                        Book
+                                    </a>
+
+                                </div>
+
+                            </article>
+
+                        {% empty %}
+
+                            <div class="empty-state">
+
+                                <h3>
+                                    No rooms currently listed.
+                                </h3>
+
+                                <p>
+                                    Check back shortly for availability.
+                                </p>
+
+                            </div>
+
+                        {% endfor %}
+
+                    </div>
+
+                </section>
+
+            </main>
+
+
+            <aside class="detail-sidebar">
+
+                <div class="detail-book-card">
+
+                    <span class="section-eyebrow">
+                        YOUR STAY
+                    </span>
+
+                    <h3>
+                        Ready to check in?
+                    </h3>
+
+                    <p>
+                        Select a room above to continue.
+                    </p>
+
+                    <a
+                        href="#rooms"
+                        class="btn btn-primary"
+                    >
+                        View rooms
+                        <span>↓</span>
+                    </a>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

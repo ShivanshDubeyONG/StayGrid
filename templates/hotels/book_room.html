@@ -1,0 +1,311 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Book Your Stay — StayGrid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="booking-page">
+
+    <div class="container">
+
+        <header class="booking-header">
+            <span class="section-eyebrow">STAYGRID RESERVATION</span>
+
+            <h1>Make it your stay.</h1>
+
+            <p>
+                Choose your dates, tell us who's coming,
+                and we'll take care of the rest.
+            </p>
+        </header>
+
+
+        <div class="booking-layout">
+
+            <!-- ================= FORM ================= -->
+
+            <main>
+
+                <form method="POST" class="booking-card">
+
+                    {% csrf_token %}
+
+                    <section class="booking-section">
+
+                        <h2>Your dates</h2>
+
+                        <div class="booking-dates">
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="check_in"
+                                >
+                                    Check in
+                                </label>
+
+                                <input
+                                    id="check_in"
+                                    name="check_in"
+                                    type="date"
+                                    class="form-control"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="check_out"
+                                >
+                                    Check out
+                                </label>
+
+                                <input
+                                    id="check_out"
+                                    name="check_out"
+                                    type="date"
+                                    class="form-control"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="booking-section">
+
+                        <h2>Guests</h2>
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="guests"
+                            >
+                                Number of guests
+                            </label>
+
+                            <input
+                                id="guests"
+                                name="guests"
+                                type="number"
+                                class="form-control"
+                                min="1"
+                                max="20"
+                                value="1"
+                                required
+                            >
+
+                            <p class="form-help">
+                                Select the total number of guests
+                                staying in this room.
+                            </p>
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="booking-section">
+
+                        <h2>Guest information</h2>
+
+                        <div class="booking-dates">
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="first_name"
+                                >
+                                    First name
+                                </label>
+
+                                <input
+                                    id="first_name"
+                                    name="first_name"
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ request.user.first_name }}"
+                                    required
+                                >
+
+                            </div>
+
+
+                            <div class="form-group">
+
+                                <label
+                                    class="form-label"
+                                    for="last_name"
+                                >
+                                    Last name
+                                </label>
+
+                                <input
+                                    id="last_name"
+                                    name="last_name"
+                                    type="text"
+                                    class="form-control"
+                                    value="{{ request.user.last_name }}"
+                                    required
+                                >
+
+                            </div>
+
+                        </div>
+
+
+                        <div
+                            class="form-group"
+                            style="margin-top:14px;"
+                        >
+
+                            <label
+                                class="form-label"
+                                for="email"
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                class="form-control"
+                                value="{{ request.user.email }}"
+                                required
+                            >
+
+                        </div>
+
+                    </section>
+
+
+                    <section class="booking-section">
+
+                        <h2>Almost there.</h2>
+
+                        <p class="form-help">
+                            Review your dates and guest details
+                            before confirming your reservation.
+                        </p>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary booking-submit"
+                        >
+                            Confirm reservation
+                        </button>
+
+                    </section>
+
+                </form>
+
+            </main>
+
+
+            <!-- ================= SUMMARY ================= -->
+
+            <aside class="booking-summary">
+
+                <div class="booking-summary-image">
+
+                    {% if hotel.image %}
+
+                        <img
+                            src="{{ hotel.image.url }}"
+                            alt="{{ hotel.name }}"
+                        >
+
+                    {% else %}
+
+                        <div class="hotel-image-placeholder">
+                            StayGrid
+                        </div>
+
+                    {% endif %}
+
+                </div>
+
+
+                <div class="booking-summary-body">
+
+                    <span class="section-eyebrow">
+                        YOUR ROOM
+                    </span>
+
+                    <h2>
+                        {{ room.room_type }}
+                    </h2>
+
+                    <p class="booking-summary-location">
+                        {{ hotel.name }}
+                        {% if hotel.location %}
+                            · {{ hotel.location }}
+                        {% endif %}
+                    </p>
+
+
+                    <div class="price-row">
+
+                        <span>
+                            Room rate
+                        </span>
+
+                        <strong>
+                            ₹{{ room.price|floatformat:0 }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="price-row">
+
+                        <span>
+                            Stay length
+                        </span>
+
+                        <span data-booking-nights>
+                            Select dates
+                        </span>
+
+                    </div>
+
+
+                    <div class="price-row total">
+
+                        <span>
+                            Estimated total
+                        </span>
+
+                        <strong data-booking-total>
+                            ₹{{ room.price|floatformat:0 }}
+                        </strong>
+
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

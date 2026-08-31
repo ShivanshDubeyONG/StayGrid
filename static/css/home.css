@@ -1,0 +1,571 @@
+/* =========================================================
+   STAYGRID — HOME
+   ========================================================= */
+
+.home-page {
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   HERO
+   ========================================================= */
+
+.home-hero {
+    position: relative;
+
+    min-height: 720px;
+
+    display: flex;
+    align-items: center;
+
+    padding: 95px 0 110px;
+
+    background:
+        radial-gradient(
+            circle at 80% 20%,
+            rgba(232, 93, 63, 0.10),
+            transparent 30%
+        ),
+        var(--color-background);
+
+    overflow: hidden;
+}
+
+.home-hero::before {
+    content: "";
+
+    position: absolute;
+
+    width: 650px;
+    height: 650px;
+
+    right: -300px;
+    top: -280px;
+
+    border: 1px solid var(--color-border-light);
+
+    border-radius: 50%;
+}
+
+.home-hero::after {
+    content: "";
+
+    position: absolute;
+
+    width: 430px;
+    height: 430px;
+
+    right: -180px;
+    top: -170px;
+
+    border: 1px solid var(--color-border-light);
+
+    border-radius: 50%;
+}
+
+
+.home-hero-inner {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   HERO COPY
+   ========================================================= */
+
+.home-hero-copy {
+    max-width: 850px;
+
+    margin-bottom: 55px;
+}
+
+.home-hero-title {
+    max-width: 850px;
+
+    margin: 10px 0 20px;
+
+    font-family: var(--font-display);
+
+    font-size: clamp(
+        4rem,
+        8vw,
+        8.5rem
+    );
+
+    font-weight: 500;
+
+    line-height: 0.87;
+
+    letter-spacing: -0.065em;
+}
+
+.home-hero-description {
+    max-width: 570px;
+
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.82rem;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   HERO META
+   ========================================================= */
+
+.home-hero-meta {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-top: 28px;
+}
+
+.home-hero-count {
+    color: var(--color-text-muted);
+
+    font-size: 0.62rem;
+}
+
+.home-hero-count strong {
+    color: var(--color-text);
+
+    font-size: 0.72rem;
+}
+
+
+/* =========================================================
+   SEARCH AREA
+   ========================================================= */
+
+.home-search-wrap {
+    position: relative;
+    z-index: 5;
+
+    margin-top: 35px;
+}
+
+
+/* =========================================================
+   FEATURED SECTION
+   ========================================================= */
+
+.home-featured {
+    padding: 110px 0;
+
+    background: var(--color-surface);
+}
+
+.home-featured-header {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 35px;
+}
+
+
+.home-featured-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+
+/* =========================================================
+   STAYGRID EXPLAINER
+   ========================================================= */
+
+.home-score-section {
+    padding: 120px 0;
+
+    background: var(--color-dark);
+
+    color: #fff;
+}
+
+.home-score-layout {
+    display: grid;
+
+    grid-template-columns:
+        0.9fr 1.1fr;
+
+    align-items: center;
+
+    gap: 90px;
+}
+
+.home-score-copy h2 {
+    margin: 10px 0 20px;
+
+    color: #fff;
+
+    font-family: var(--font-display);
+
+    font-size: clamp(
+        3rem,
+        5vw,
+        5.5rem
+    );
+
+    font-weight: 500;
+
+    line-height: 0.92;
+
+    letter-spacing: -0.055em;
+}
+
+.home-score-copy p {
+    max-width: 470px;
+
+    margin: 0;
+
+    color: rgba(255,255,255,0.52);
+
+    font-size: 0.76rem;
+
+    line-height: 1.75;
+}
+
+
+/* =========================================================
+   SCORE VISUAL
+   ========================================================= */
+
+.home-score-visual {
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 420px;
+}
+
+.home-score-orbit {
+    position: absolute;
+
+    width: 360px;
+    height: 360px;
+
+    border: 1px solid rgba(255,255,255,0.12);
+
+    border-radius: 50%;
+}
+
+.home-score-orbit::before {
+    content: "";
+
+    position: absolute;
+
+    inset: 45px;
+
+    border: 1px solid rgba(255,255,255,0.08);
+
+    border-radius: 50%;
+}
+
+.home-score-number {
+    position: relative;
+    z-index: 2;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 185px;
+    height: 185px;
+
+    background: #fff;
+
+    color: var(--color-dark);
+
+    border-radius: 50%;
+
+    box-shadow:
+        0 30px 80px rgba(0,0,0,0.3);
+}
+
+.home-score-number strong {
+    font-family: var(--font-display);
+
+    font-size: 4.5rem;
+
+    font-weight: 500;
+
+    line-height: 0.8;
+
+    letter-spacing: -0.06em;
+}
+
+.home-score-number span {
+    margin-top: 12px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.55rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.12em;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   WHY STAYGRID
+   ========================================================= */
+
+.home-benefits {
+    padding: 110px 0;
+}
+
+.home-benefits-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, minmax(0, 1fr));
+
+    gap: 1px;
+
+    background: var(--color-border);
+}
+
+.home-benefit {
+    min-height: 240px;
+
+    padding: 32px;
+
+    background: var(--color-background);
+}
+
+.home-benefit-number {
+    display: block;
+
+    margin-bottom: 55px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.58rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.1em;
+}
+
+.home-benefit h3 {
+    margin: 0 0 10px;
+
+    font-size: 1rem;
+
+    letter-spacing: -0.02em;
+}
+
+.home-benefit p {
+    max-width: 320px;
+
+    margin: 0;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.66rem;
+
+    line-height: 1.7;
+}
+
+
+/* =========================================================
+   FINAL CTA
+   ========================================================= */
+
+.home-cta {
+    padding: 110px 0;
+}
+
+.home-cta-card {
+    position: relative;
+
+    overflow: hidden;
+
+    padding: 75px 60px;
+
+    background: var(--color-surface-soft);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: var(--radius-xl);
+
+    text-align: center;
+}
+
+.home-cta-card::before {
+    content: "";
+
+    position: absolute;
+
+    width: 350px;
+    height: 350px;
+
+    top: -220px;
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    border: 1px solid var(--color-border);
+
+    border-radius: 50%;
+}
+
+.home-cta-card h2 {
+    position: relative;
+    z-index: 2;
+
+    margin: 8px auto 15px;
+
+    max-width: 700px;
+
+    font-family: var(--font-display);
+
+    font-size: clamp(
+        2.8rem,
+        5vw,
+        5rem
+    );
+
+    font-weight: 500;
+
+    line-height: 0.95;
+
+    letter-spacing: -0.055em;
+}
+
+.home-cta-card p {
+    position: relative;
+    z-index: 2;
+
+    max-width: 480px;
+
+    margin: 0 auto 25px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.7rem;
+
+    line-height: 1.65;
+}
+
+.home-cta-card .btn {
+    position: relative;
+    z-index: 2;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .home-hero {
+        min-height: auto;
+
+        padding: 80px 0 80px;
+    }
+
+    .home-featured-grid {
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .home-score-layout {
+        grid-template-columns: 1fr;
+
+        gap: 40px;
+    }
+
+    .home-score-visual {
+        min-height: 340px;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .home-hero {
+        padding: 60px 0 65px;
+    }
+
+    .home-hero-title {
+        font-size: 4rem;
+    }
+
+    .home-hero-meta {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 10px;
+    }
+
+    .home-featured {
+        padding: 75px 0;
+    }
+
+    .home-featured-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-score-section {
+        padding: 80px 0;
+    }
+
+    .home-score-orbit {
+        width: 280px;
+        height: 280px;
+    }
+
+    .home-benefits {
+        padding: 75px 0;
+    }
+
+    .home-benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .home-benefit {
+        min-height: 190px;
+    }
+
+    .home-cta {
+        padding: 70px 0;
+    }
+
+    .home-cta-card {
+        padding: 55px 25px;
+    }
+
+}

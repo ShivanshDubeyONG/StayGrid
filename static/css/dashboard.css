@@ -1,0 +1,251 @@
+/* =========================================================
+   DASHBOARDS
+   ========================================================= */
+
+.dashboard-page {
+    padding: 45px 0 90px;
+}
+
+.dashboard-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 35px;
+}
+
+.dashboard-header h1 {
+    margin: 0;
+
+    font-size: clamp(2.5rem, 5vw, 4.3rem);
+
+    letter-spacing: -0.05em;
+}
+
+.dashboard-header p {
+    margin: 10px 0 0;
+
+    color: var(--color-text-secondary);
+}
+
+
+/* =========================================================
+   STAT CARDS
+   ========================================================= */
+
+.dashboard-stats {
+    display: grid;
+
+    grid-template-columns: repeat(4, 1fr);
+
+    gap: 14px;
+
+    margin-bottom: 28px;
+}
+
+.stat-card {
+    padding: 22px;
+
+    background: #fff;
+
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-md);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.stat-label {
+    display: block;
+
+    margin-bottom: 12px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.65rem;
+    font-weight: 700;
+
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.stat-value {
+    display: block;
+
+    font-family: var(--font-display);
+
+    font-size: 2rem;
+
+    letter-spacing: -0.03em;
+}
+
+.stat-change {
+    display: inline-flex;
+
+    margin-top: 8px;
+
+    color: var(--color-success);
+
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+
+/* =========================================================
+   DASHBOARD GRID
+   ========================================================= */
+
+.dashboard-grid {
+    display: grid;
+
+    grid-template-columns:
+        minmax(0, 1.5fr)
+        minmax(280px, 0.8fr);
+
+    gap: 22px;
+}
+
+.dashboard-panel {
+    overflow: hidden;
+
+    background: #fff;
+
+    border: 1px solid var(--color-border-light);
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+
+    padding: 20px 22px;
+
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.panel-header h2 {
+    margin: 0;
+
+    font-family: var(--font-body);
+
+    font-size: 0.95rem;
+}
+
+.panel-body {
+    padding: 22px;
+}
+
+
+/* =========================================================
+   TABLE
+   ========================================================= */
+
+.dashboard-table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+.dashboard-table th {
+    padding: 10px 12px;
+
+    color: var(--color-text-muted);
+
+    font-size: 0.62rem;
+    font-weight: 700;
+
+    text-align: left;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+}
+
+.dashboard-table td {
+    padding: 15px 12px;
+
+    border-top: 1px solid var(--color-border-light);
+
+    font-size: 0.72rem;
+}
+
+.dashboard-table tr:hover td {
+    background: var(--color-bg);
+}
+
+
+/* =========================================================
+   QUICK ACTIONS
+   ========================================================= */
+
+.quick-actions {
+    display: grid;
+    gap: 9px;
+}
+
+.quick-action {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 14px;
+
+    background: var(--color-surface-soft);
+
+    border-radius: 10px;
+
+    font-size: 0.73rem;
+    font-weight: 600;
+
+    transition:
+        transform 200ms var(--ease-standard),
+        background-color 200ms ease;
+}
+
+.quick-action:hover {
+    background: #e7e5df;
+
+    transform: translateX(3px);
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+@media (max-width: 600px) {
+
+    .dashboard-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .dashboard-table {
+        min-width: 650px;
+    }
+
+    .dashboard-panel {
+        overflow-x: auto;
+    }
+
+}

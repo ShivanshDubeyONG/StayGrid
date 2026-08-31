@@ -1,0 +1,51 @@
+<article class="room-card">
+
+    <div>
+
+        <span class="section-eyebrow">
+            ROOM
+        </span>
+
+        <h3>
+            {{ room.room_type }}
+        </h3>
+
+        {% if room.description %}
+
+            <p>
+                {{ room.description }}
+            </p>
+
+        {% else %}
+
+            <p>
+                Comfortable accommodation for your stay.
+            </p>
+
+        {% endif %}
+
+    </div>
+
+
+    <div class="room-card-price">
+
+        <strong>
+            ₹{{ room.price|floatformat:0 }}
+        </strong>
+
+        <span>
+            per night
+        </span>
+
+
+        <a
+            href="{% url 'book_room' room.id %}"
+            class="btn btn-primary"
+            style="margin-top:12px;"
+        >
+            Reserve
+        </a>
+
+    </div>
+
+</article>

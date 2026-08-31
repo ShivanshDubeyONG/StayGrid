@@ -1,24 +1,57 @@
-@media (max-width: 900px) {
+/* =========================================================
+   GLOBAL RESPONSIVE SYSTEM
+   ========================================================= */
 
-    :root {
-        --text-4xl: 2.75rem;
-        --text-3xl: 2rem;
-        --space-20: 4rem;
+@media (max-width: 1050px) {
+
+    .hotel-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .search-panel {
+        grid-template-columns:
+            1.4fr
+            auto
+            1fr
+            auto
+            1fr
+            56px;
+    }
+
+    .search-guests {
+        display: none;
+    }
+
+}
+
+
+/* =========================================================
+   NAVIGATION
+   ========================================================= */
+
+@media (max-width: 800px) {
+
+    .site-nav {
+        height: 70px;
     }
 
     .nav-links {
         position: absolute;
-        top: var(--nav-height);
-        left: 20px;
-        right: 20px;
+
+        top: calc(100% + 8px);
+        left: 14px;
+        right: 14px;
 
         display: none;
+
         flex-direction: column;
         align-items: stretch;
 
-        padding: var(--space-4);
+        gap: 0;
 
-        background: white;
+        padding: 8px;
+
+        background: #fff;
 
         border: 1px solid var(--color-border);
         border-radius: var(--radius-md);
@@ -31,7 +64,11 @@
     }
 
     .nav-link {
-        padding: 10px;
+        padding: 12px;
+    }
+
+    .nav-link::after {
+        display: none;
     }
 
     .mobile-menu-button {
@@ -39,41 +76,82 @@
         place-items: center;
     }
 
-    .section-header {
-        align-items: start;
-        flex-direction: column;
+
+    /* SEARCH */
+
+    .search-panel {
+        grid-template-columns: 1fr 1fr 54px;
+        gap: 0;
+        padding: 6px;
     }
 
-    .footer-inner {
-        flex-direction: column;
+    .search-destination {
+        grid-column: 1 / -1;
     }
+
+    .search-divider {
+        display: none;
+    }
+
+    .search-field {
+        padding: 9px;
+    }
+
+    .search-submit {
+        grid-column: 3;
+        grid-row: 2;
+    }
+
+
+    /* ROOMS */
+
+    .room-card {
+        grid-template-columns: 45px 1fr;
+    }
+
+    .room-action {
+        grid-column: 2;
+        align-items: flex-start;
+    }
+
 }
 
 
 @media (max-width: 600px) {
 
-    :root {
-        --text-4xl: 2.35rem;
-        --text-3xl: 1.8rem;
-        --nav-height: 68px;
+    .container,
+    .container-wide {
+        width: calc(100% - 28px);
     }
 
-    .container {
-        width: min(
-            calc(100% - 28px),
-            var(--container-width)
-        );
+    .hotel-grid {
+        grid-template-columns: 1fr;
     }
 
-    .nav-actions .btn {
+    .nav-actions .nav-login,
+    .nav-actions > .btn {
         display: none;
     }
 
-    .section {
-        padding-block: var(--space-12);
+    .search-panel {
+        grid-template-columns: 1fr 1fr 48px;
     }
 
-    .footer-links {
-        flex-wrap: wrap;
+    .search-submit {
+        width: 48px;
+        height: 48px;
     }
+
+    .search-field input {
+        font-size: 0.7rem;
+    }
+
+    .search-field label {
+        font-size: 0.53rem;
+    }
+
+    .room-card {
+        padding: 15px;
+    }
+
 }

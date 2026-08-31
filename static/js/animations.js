@@ -1,35 +1,93 @@
+/* =========================================================
+   STAYGRID — MOTION ENGINE
+   ========================================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
 
-    const elements = document.querySelectorAll(
-        "[data-animate]"
-    );
+    const animatedElements =
+        document.querySelectorAll(
+            "[data-reveal]"
+        );
 
-    if (!elements.length) return;
+    if (!animatedElements.length) {
+        return;
+    }
 
-    const observer = new IntersectionObserver(
-        (entries, observer) => {
 
-            entries.forEach((entry) => {
+    /* =====================================================
+       ACCESSIBILITY
+       ===================================================== */
 
-                if (!entry.isIntersecting) return;
+    const reduceMotion =
+        window.matchMedia(
+            "(prefers-reduced-motion: reduce)"
+        ).matches;
 
-                entry.target.classList.add(
-                    "animate-in"
-                );
+    if (reduceMotion) {
 
-                observer.unobserve(
-                    entry.target
-                );
+        animatedElements.forEach((element) => {
+            element.classList.add("is-visible");
+        });
 
-            });
+        return;
+    }
 
-        },
-        {
-            threshold: 0.12,
-        }
-    );
 
-    elements.forEach((element) => {
+    /* =====================================================
+       INTERSECTION OBSERVER
+       ===================================================== */
+
+    if (!("IntersectionObserver" in window)) {
+
+        animatedElements.forEach((element) => {
+            element.classList.add("is-visible");
+        });
+
+        return;
+    }
+
+
+    const observer =
+        new IntersectionObserver(
+            (entries, observerInstance) => {
+
+                entries.forEach((entry) => {
+
+                    if (!entry.isIntersecting) {
+                        return;
+                    }
+
+                    const element =
+                        entry.target;
+
+                    const delay =
+                        element.dataset.revealDelay;
+
+                    if (delay) {
+                        element.style.animationDelay =
+                            `${delay}ms`;
+                    }
+
+                    element.classList.add(
+                        "is-visible"
+                    );
+
+                    observerInstance.unobserve(
+                        element
+                    );
+
+                });
+
+            },
+            {
+                threshold: 0.12,
+                rootMargin:
+                    "0px 0px -50px 0px"
+            }
+        );
+
+
+    animatedElements.forEach((element) => {
         observer.observe(element);
     });
 

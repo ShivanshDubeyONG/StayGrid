@@ -1,9 +1,11 @@
 <form
+    method="GET"
     action="{% url 'hotel_list' %}"
-    method="get"
     class="search-panel"
     data-search-form
 >
+
+    <!-- DESTINATION -->
 
     <div class="search-field search-destination">
 
@@ -21,15 +23,20 @@
                 id="search-location"
                 type="text"
                 name="location"
-                value="{{ location|default:'' }}"
+                value="{{ request.GET.location|default:'' }}"
                 placeholder="Where are you going?"
+                autocomplete="off"
             >
 
         </div>
 
     </div>
 
+
     <div class="search-divider"></div>
+
+
+    <!-- CHECK IN -->
 
     <div class="search-field">
 
@@ -39,22 +46,26 @@
 
         <div>
 
-            <label for="search-checkin">
+            <label for="search-check-in">
                 Check in
             </label>
 
             <input
-                id="search-checkin"
+                id="search-check-in"
                 type="date"
                 name="check_in"
-                min="{% now 'Y-m-d' %}"
+                value="{{ request.GET.check_in|default:'' }}"
             >
 
         </div>
 
     </div>
 
+
     <div class="search-divider"></div>
+
+
+    <!-- CHECK OUT -->
 
     <div class="search-field">
 
@@ -64,26 +75,31 @@
 
         <div>
 
-            <label for="search-checkout">
+            <label for="search-check-out">
                 Check out
             </label>
 
             <input
-                id="search-checkout"
+                id="search-check-out"
                 type="date"
                 name="check_out"
+                value="{{ request.GET.check_out|default:'' }}"
             >
 
         </div>
 
     </div>
 
+
     <div class="search-divider"></div>
+
+
+    <!-- GUESTS -->
 
     <div class="search-field search-guests">
 
         <span class="search-icon">
-            ♙
+            ◉
         </span>
 
         <div>
@@ -96,17 +112,21 @@
                 id="search-guests"
                 type="number"
                 name="guests"
+                value="{{ request.GET.guests|default:'1' }}"
                 min="1"
-                value="2"
+                max="20"
             >
 
         </div>
 
     </div>
 
+
+    <!-- SUBMIT -->
+
     <button
-        class="search-submit"
         type="submit"
+        class="search-submit"
         aria-label="Search stays"
     >
         →

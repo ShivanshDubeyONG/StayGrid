@@ -1,42 +1,146 @@
+/* =========================================================
+   STAYGRID — NAVIGATION
+   ========================================================= */
+
 document.addEventListener("DOMContentLoaded", () => {
 
-    const nav = document.getElementById("site-nav");
-    const button = document.getElementById(
-        "mobile-menu-button"
-    );
-    const links = document.getElementById(
-        "nav-links"
-    );
+    const nav =
+        document.querySelector(".site-nav");
 
-    if (!nav) return;
+    const menuButton =
+        document.querySelector(
+            "#mobile-menu-button"
+        );
+
+    const navLinks =
+        document.querySelector("#nav-links");
+
+
+    if (!nav) {
+        return;
+    }
+
+
+    /* =====================================================
+       SCROLL STATE
+       ===================================================== */
+
+    function updateNav() {
+
+        if (window.scrollY > 15) {
+            nav.classList.add("scrolled");
+        } else {
+            nav.classList.remove("scrolled");
+        }
+
+    }
+
+    updateNav();
 
     window.addEventListener(
         "scroll",
-        () => {
-
-            if (window.scrollY > 10) {
-                nav.classList.add("scrolled");
-            } else {
-                nav.classList.remove("scrolled");
-            }
-
-        },
+        updateNav,
         { passive: true }
     );
 
-    if (!button || !links) return;
 
-    button.addEventListener("click", () => {
+    /* =====================================================
+       MOBILE MENU
+       ===================================================== */
 
-        const open = links.classList.toggle(
-            "mobile-open"
-        );
+    if (!menuButton || !navLinks) {
+        return;
+    }
 
-        button.setAttribute(
-            "aria-expanded",
-            open
-        );
 
-    });
+    menuButton.addEventListener(
+        "click",
+        () => {
+
+            const open =
+                navLinks.classList.toggle(
+                    "mobile-open"
+                );
+
+            menuButton.setAttribute(
+                "aria-expanded",
+                String(open)
+            );
+
+            menuButton.setAttribute(
+                "aria-label",
+                open
+                    ? "Close navigation"
+                    : "Open navigation"
+            );
+
+            menuButton.textContent =
+                open ? "×" : "☰";
+
+        }
+    );
+
+
+    /* =====================================================
+       CLOSE AFTER NAVIGATION
+       ===================================================== */
+
+    navLinks
+        .querySelectorAll("a")
+        .forEach((link) => {
+
+            link.addEventListener(
+                "click",
+                () => {
+
+                    navLinks.classList.remove(
+                        "mobile-open"
+                    );
+
+                    menuButton.setAttribute(
+                        "aria-expanded",
+                        "false"
+                    );
+
+                    menuButton.textContent =
+                        "☰";
+
+                }
+            );
+
+        });
+
+
+    /* =====================================================
+       CLICK OUTSIDE
+       ===================================================== */
+
+    document.addEventListener(
+        "click",
+        (event) => {
+
+            if (
+                navLinks.classList.contains(
+                    "mobile-open"
+                ) &&
+                !nav.contains(event.target)
+            ) {
+
+                navLinks.classList.remove(
+                    "mobile-open"
+                );
+
+                menuButton.setAttribute(
+                    "aria-expanded",
+                    "false"
+                );
+
+                menuButton.textContent =
+                    "☰";
+
+            }
+
+        }
+    );
 
 });

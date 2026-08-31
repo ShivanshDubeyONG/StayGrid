@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Log in — StayGrid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <div class="container">
+
+        <div class="auth-layout">
+
+            <!-- BRAND -->
+
+            <div class="auth-brand">
+
+                <div class="auth-brand-content">
+
+                    <div class="auth-brand-mark">
+                        S
+                    </div>
+
+                    <span class="section-eyebrow">
+                        WELCOME BACK
+                    </span>
+
+                    <h1>
+                        Your stays.<br>
+                        Your way.
+                    </h1>
+
+                    <p>
+                        Pick up where you left off.
+                        Discover stays that fit the way
+                        you actually travel.
+                    </p>
+
+                    <div class="auth-stat">
+
+                        <span class="auth-stat-number">
+                            30+
+                        </span>
+
+                        <span class="auth-stat-label">
+                            stays waiting to be discovered
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="auth-brand-footer">
+                    <span>STAYGRID</span>
+                    <span>·</span>
+                    <span>STAY BETTER</span>
+                </div>
+
+            </div>
+
+
+            <!-- FORM -->
+
+            <div class="auth-form-panel">
+
+                <div class="auth-form-wrap">
+
+                    <header class="auth-form-header">
+
+                        <span class="section-eyebrow">
+                            ACCOUNT
+                        </span>
+
+                        <h2>
+                            Welcome back.
+                        </h2>
+
+                        <p>
+                            Log in to manage your stays and bookings.
+                        </p>
+
+                    </header>
+
+
+                    {% if messages %}
+
+                        <div class="auth-errors">
+
+                            {% for message in messages %}
+
+                                <div class="auth-errors">
+
+                                    <ul>
+                                        <li>
+                                            {{ message }}
+                                        </li>
+                                    </ul>
+
+                                </div>
+
+                            {% endfor %}
+
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if form.errors %}
+
+                        <div class="auth-errors">
+
+                            <ul>
+                                <li>
+                                    Please check your username
+                                    and password and try again.
+                                </li>
+                            </ul>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <form
+                        method="POST"
+                        class="auth-form"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="id_username"
+                            >
+                                Username
+                            </label>
+
+                            <input
+                                id="id_username"
+                                name="username"
+                                type="text"
+                                class="form-control"
+                                autocomplete="username"
+                                placeholder="Your username"
+                                required
+                                autofocus
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="id_password"
+                            >
+                                Password
+                            </label>
+
+                            <input
+                                id="id_password"
+                                name="password"
+                                type="password"
+                                class="form-control"
+                                autocomplete="current-password"
+                                placeholder="Your password"
+                                required
+                            >
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Log in
+                        </button>
+
+                    </form>
+
+
+                    <p class="auth-switch">
+                        Don't have an account?
+                        <a href="{% url 'register' %}">
+                            Create one
+                        </a>
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

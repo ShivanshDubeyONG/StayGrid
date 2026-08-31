@@ -1,141 +1,360 @@
 {% extends "base.html" %}
-
 {% load static %}
 
-{% block title %}
-    StayGrid — Discover stays worth remembering
-{% endblock %}
+{% block title %}StayGrid — Find your next stay{% endblock %}
 
 {% block extra_css %}
-    <link
-        rel="stylesheet"
-        href="{% static 'css/home.css' %}"
-    >
+<link rel="stylesheet" href="{% static 'css/home.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<section class="hero">
+<div class="home-page">
 
-    <div class="hero-background"></div>
+    <!-- =====================================================
+         HERO
+         ===================================================== -->
 
-    <div class="container hero-content">
+    <section class="home-hero">
 
-        <div class="hero-copy reveal">
+        <div class="container home-hero-inner">
 
-            <span class="hero-eyebrow">
-                THE SMARTER WAY TO STAY
-            </span>
+            <div
+                class="home-hero-copy"
+                data-reveal
+            >
 
-            <h1>
-                Find a stay
-                <span>worth remembering.</span>
-            </h1>
-
-            <p>
-                Compare stays by more than just a star rating.
-                Discover places that actually fit the way you travel.
-            </p>
-
-        </div>
-
-        <div class="hero-search reveal reveal-delay-1">
-
-            {% include "components/search_bar.html" %}
-
-        </div>
-
-        <div class="hero-trust reveal reveal-delay-2">
-
-            <div class="trust-item">
-
-                <strong>
-                    30+
-                </strong>
-
-                <span>
-                    curated stays
+                <span class="section-eyebrow">
+                    STAYGRID EXPLORE
                 </span>
 
-            </div>
+                <h1 class="home-hero-title">
+                    Find your<br>
+                    next stay.
+                </h1>
 
-            <div class="trust-item-divider"></div>
-
-            <div class="trust-item">
-
-                <strong>
-                    Real
-                </strong>
-
-                <span>
-                    availability
-                </span>
-
-            </div>
-
-            <div class="trust-item-divider"></div>
-
-            <div class="trust-item">
-
-                <strong>
-                    Smart
-                </strong>
-
-                <span>
-                    Stay Scores
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="hero-scroll">
-
-        <span>
-            Scroll to explore
-        </span>
-
-        <span class="scroll-line"></span>
-
-    </div>
-
-</section>
+                <p class="home-hero-description">
+                    Compare stays by location, price,
+                    rating and Stay Score — then book
+                    the one that actually makes sense.
+                </p>
 
 
-<section class="featured-section" id="featured">
+                <div class="home-hero-meta">
 
-    <div class="container">
+                    <span>
+                        Discover stays across India.
+                    </span>
 
-        {% include "components/section_heading.html" with eyebrow="HANDPICKED FOR YOU" title="Stays people actually want to book." description="Explore our highest-ranked properties across Bengaluru, Mumbai, Delhi and more." action_url="/hotels/" action_text="View all stays" %}
+                    {% if hotel_count %}
+                        <span class="home-hero-count">
+                            <strong>{{ hotel_count }}</strong>
+                            stays
+                        </span>
+                    {% endif %}
 
-        {% if hotels %}
-
-            <div class="hotel-grid">
-
-                {% for hotel in hotels %}
-
-                    {% include "components/hotel_card.html" %}
-
-                {% endfor %}
-
-            </div>
-
-        {% else %}
-
-            <div class="empty-state">
-
-                <div class="empty-state-icon">
-                    ◌
                 </div>
 
-                <h3>
-                    Your next stay is waiting.
-                </h3>
+            </div>
+
+
+            <!-- SEARCH -->
+
+            <div
+                class="home-search-wrap"
+                data-reveal
+                data-reveal-delay="120"
+            >
+
+                {% include "components/search_bar.html" %}
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FEATURED STAYS
+         ===================================================== -->
+
+    <section class="home-featured">
+
+        <div class="container">
+
+            <div
+                class="home-featured-header"
+                data-reveal
+            >
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        CURATED FOR YOU
+                    </span>
+
+                    <h2>
+                        Stays worth<br>
+                        checking out.
+                    </h2>
+
+                </div>
+
+
+                <a
+                    href="{% url 'hotel_list' %}"
+                    class="btn btn-secondary"
+                >
+                    Explore all stays
+                    <span>→</span>
+                </a>
+
+            </div>
+
+
+            {% if featured_hotels %}
+
+                <div class="home-featured-grid">
+
+                    {% for hotel in featured_hotels %}
+
+                        {% include "components/hotel_card.html" %}
+
+                    {% endfor %}
+
+                </div>
+
+            {% elif hotels %}
+
+                <div class="home-featured-grid">
+
+                    {% for hotel in hotels|slice:":6" %}
+
+                        {% include "components/hotel_card.html" %}
+
+                    {% endfor %}
+
+                </div>
+
+            {% else %}
+
+                <div class="empty-state">
+
+                    <div class="empty-state-icon">
+                        ◇
+                    </div>
+
+                    <h3>
+                        Stays are arriving.
+                    </h3>
+
+                    <p>
+                        We're getting the StayGrid collection
+                        ready. Check back soon.
+                    </p>
+
+                </div>
+
+            {% endif %}
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         STAY SCORE
+         ===================================================== -->
+
+    <section class="home-score-section">
+
+        <div class="container">
+
+            <div class="home-score-layout">
+
+                <div
+                    class="home-score-copy"
+                    data-reveal
+                >
+
+                    <span class="section-eyebrow">
+                        THE STAYGRID DIFFERENCE
+                    </span>
+
+                    <h2>
+                        A rating<br>
+                        isn't enough.
+                    </h2>
+
+                    <p>
+                        Stay Score brings multiple signals together
+                        to help you compare properties beyond a
+                        single star rating. Price, quality and the
+                        overall stay experience matter.
+                    </p>
+
+                </div>
+
+
+                <div
+                    class="home-score-visual"
+                    data-reveal
+                    data-reveal-delay="150"
+                >
+
+                    <div class="home-score-orbit"></div>
+
+                    <div class="home-score-number">
+
+                        <strong>
+                            9.2
+                        </strong>
+
+                        <span>
+                            Stay Score
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         WHY STAYGRID
+         ===================================================== -->
+
+    <section class="home-benefits">
+
+        <div class="container">
+
+            <div
+                class="section-heading"
+                data-reveal
+            >
+
+                <div>
+
+                    <span class="section-eyebrow">
+                        WHY STAYGRID
+                    </span>
+
+                    <h2>
+                        Booking without<br>
+                        the nonsense.
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <div class="home-benefits-grid">
+
+                <article
+                    class="home-benefit"
+                    data-reveal
+                >
+
+                    <span class="home-benefit-number">
+                        01
+                    </span>
+
+                    <h3>
+                        Compare intelligently.
+                    </h3>
+
+                    <p>
+                        Search by location, price and rating,
+                        then use Stay Score to find the properties
+                        that stand out.
+                    </p>
+
+                </article>
+
+
+                <article
+                    class="home-benefit"
+                    data-reveal
+                    data-reveal-delay="100"
+                >
+
+                    <span class="home-benefit-number">
+                        02
+                    </span>
+
+                    <h3>
+                        See the real options.
+                    </h3>
+
+                    <p>
+                        Browse actual rooms, nightly prices
+                        and property information before you
+                        commit to a booking.
+                    </p>
+
+                </article>
+
+
+                <article
+                    class="home-benefit"
+                    data-reveal
+                    data-reveal-delay="200"
+                >
+
+                    <span class="home-benefit-number">
+                        03
+                    </span>
+
+                    <h3>
+                        Keep everything together.
+                    </h3>
+
+                    <p>
+                        Your bookings, profile and stays all
+                        live in one simple travel dashboard.
+                    </p>
+
+                </article>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         FINAL CTA
+         ===================================================== -->
+
+    <section class="home-cta">
+
+        <div class="container">
+
+            <div
+                class="home-cta-card"
+                data-reveal
+            >
+
+                <span class="section-eyebrow">
+                    YOUR NEXT TRIP STARTS HERE
+                </span>
+
+                <h2>
+                    Go somewhere<br>
+                    worth remembering.
+                </h2>
 
                 <p>
-                    We're adding more properties. Check back soon.
+                    Explore the StayGrid collection and
+                    find a stay that fits your trip.
                 </p>
 
                 <a
@@ -143,163 +362,15 @@
                     class="btn btn-primary"
                 >
                     Explore stays
-                </a>
-
-            </div>
-
-        {% endif %}
-
-    </div>
-
-</section>
-
-
-<section
-    class="experience-section"
-    id="destinations"
->
-
-    <div class="container">
-
-        <div class="experience-grid">
-
-            <div class="experience-copy reveal">
-
-                <span class="section-eyebrow">
-                    WHY STAYGRID
-                </span>
-
-                <h2>
-                    Booking a room is easy.
-                    <em>Choosing the right one isn't.</em>
-                </h2>
-
-                <p>
-                    StayGrid brings price, quality, location,
-                    availability and guest signals together so
-                    you can make a better decision before you book.
-                </p>
-
-                <a
-                    href="{% url 'hotel_list' %}"
-                    class="btn btn-dark"
-                >
-                    Explore the grid
                     <span>→</span>
                 </a>
 
             </div>
 
-            <div class="experience-features">
-
-                <div class="feature-card reveal">
-
-                    <span class="feature-number">
-                        01
-                    </span>
-
-                    <h3>
-                        Stay Score
-                    </h3>
-
-                    <p>
-                        A smarter ranking that considers more than
-                        the hotel's headline rating.
-                    </p>
-
-                </div>
-
-                <div class="feature-card reveal reveal-delay-1">
-
-                    <span class="feature-number">
-                        02
-                    </span>
-
-                    <h3>
-                        Real availability
-                    </h3>
-
-                    <p>
-                        See available rooms and understand what
-                        you're actually booking.
-                    </p>
-
-                </div>
-
-                <div class="feature-card reveal reveal-delay-2">
-
-                    <span class="feature-number">
-                        03
-                    </span>
-
-                    <h3>
-                        Built for travellers
-                    </h3>
-
-                    <p>
-                        Search, compare, book and manage everything
-                        from one clean experience.
-                    </p>
-
-                </div>
-
-                <div class="feature-card reveal reveal-delay-3">
-
-                    <span class="feature-number">
-                        04
-                    </span>
-
-                    <h3>
-                        Built for owners
-                    </h3>
-
-                    <p>
-                        Vendors get their own tools to manage
-                        properties, rooms and bookings.
-                    </p>
-
-                </div>
-
-            </div>
-
         </div>
 
-    </div>
+    </section>
 
-</section>
-
-
-<section class="cta-section">
-
-    <div class="container">
-
-        <div class="cta-card reveal">
-
-            <div>
-
-                <span class="section-eyebrow">
-                    YOUR NEXT CHECK-IN
-                </span>
-
-                <h2>
-                    Somewhere good
-                    is closer than you think.
-                </h2>
-
-            </div>
-
-            <a
-                href="{% url 'hotel_list' %}"
-                class="btn btn-light"
-            >
-                Find my stay
-                <span>→</span>
-            </a>
-
-        </div>
-
-    </div>
-
-</section>
+</div>
 
 {% endblock %}

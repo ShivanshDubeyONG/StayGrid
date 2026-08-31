@@ -1,20 +1,26 @@
-<div class="section-heading {% if centered %}section-heading-centered{% endif %}">
+<header class="section-heading">
 
     <div>
 
         {% if eyebrow %}
+
             <span class="section-eyebrow">
                 {{ eyebrow }}
             </span>
+
         {% endif %}
 
-        <h2 class="section-title">
-            {{ title }}
-        </h2>
+        {% if title %}
+
+            <h2>
+                {{ title }}
+            </h2>
+
+        {% endif %}
 
         {% if description %}
 
-            <p class="section-description">
+            <p>
                 {{ description }}
             </p>
 
@@ -22,11 +28,12 @@
 
     </div>
 
+
     {% if action_url and action_text %}
 
         <a
             href="{{ action_url }}"
-            class="text-link"
+            class="btn btn-secondary"
         >
             {{ action_text }}
             <span>→</span>
@@ -34,4 +41,4 @@
 
     {% endif %}
 
-</div>
+</header>

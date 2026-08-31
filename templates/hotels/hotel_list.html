@@ -1,0 +1,399 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Explore Stays — StayGrid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/hotels.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="hotels-page">
+
+    <div class="container">
+
+        <!-- =================================================
+             PAGE HEADER
+             ================================================= -->
+
+        <header class="hotels-header" data-reveal>
+
+            <div>
+
+                <span class="section-eyebrow">
+                    STAYGRID EXPLORE
+                </span>
+
+                <h1>
+                    Find your stay.
+                </h1>
+
+                <p>
+                    Compare properties by price,
+                    location, rating and Stay Score.
+                </p>
+
+            </div>
+
+            <div class="hotels-result-count">
+
+                <strong>
+                    {{ hotels|length }}
+                </strong>
+
+                <span>
+                    stays
+                </span>
+
+            </div>
+
+        </header>
+
+
+        <!-- =================================================
+             SEARCH
+             ================================================= -->
+
+        <div
+            class="hotels-search"
+            data-reveal
+            data-reveal-delay="80"
+        >
+
+            {% include "components/search_bar.html" %}
+
+        </div>
+
+
+        <!-- =================================================
+             RESULTS TOOLBAR
+             ================================================= -->
+
+        <div
+            class="hotels-toolbar"
+            data-reveal
+            data-reveal-delay="120"
+        >
+
+            <div class="hotels-toolbar-copy">
+
+                <span class="section-eyebrow">
+                    RESULTS
+                </span>
+
+                <strong>
+                    {% if request.GET.location %}
+                        Stays in {{ request.GET.location }}
+                    {% else %}
+                        All available stays
+                    {% endif %}
+                </strong>
+
+            </div>
+
+
+            <form
+                method="GET"
+                class="sort-form"
+            >
+
+                {% if request.GET.location %}
+                    <input
+                        type="hidden"
+                        name="location"
+                        value="{{ request.GET.location }}"
+                    >
+                {% endif %}
+
+                {% if request.GET.q %}
+                    <input
+                        type="hidden"
+                        name="q"
+                        value="{{ request.GET.q }}"
+                    >
+                {% endif %}
+
+                {% if request.GET.min_price %}
+                    <input
+                        type="hidden"
+                        name="min_price"
+                        value="{{ request.GET.min_price }}"
+                    >
+                {% endif %}
+
+                {% if request.GET.max_price %}
+                    <input
+                        type="hidden"
+                        name="max_price"
+                        value="{{ request.GET.max_price }}"
+                    >
+                {% endif %}
+
+                {% if request.GET.rating %}
+                    <input
+                        type="hidden"
+                        name="rating"
+                        value="{{ request.GET.rating }}"
+                    >
+                {% endif %}
+
+
+                <label for="sort">
+                    SORT
+                </label>
+
+                <select
+                    id="sort"
+                    name="sort"
+                    onchange="this.form.submit()"
+                >
+
+                    <option value="score"
+                        {% if request.GET.sort == "score" or not request.GET.sort %}
+                            selected
+                        {% endif %}
+                    >
+                        Stay Score
+                    </option>
+
+                    <option value="price_low"
+                        {% if request.GET.sort == "price_low" %}
+                            selected
+                        {% endif %}
+                    >
+                        Price: Low to High
+                    </option>
+
+                    <option value="price_high"
+                        {% if request.GET.sort == "price_high" %}
+                            selected
+                        {% endif %}
+                    >
+                        Price: High to Low
+                    </option>
+
+                    <option value="rating"
+                        {% if request.GET.sort == "rating" %}
+                            selected
+                        {% endif %}
+                    >
+                        Rating
+                    </option>
+
+                </select>
+
+            </form>
+
+        </div>
+
+
+        <!-- =================================================
+             RESULTS
+             ================================================= -->
+
+        {% if hotels %}
+
+            <div class="hotels-results">
+
+                <aside
+                    class="hotels-filters"
+                    data-reveal
+                >
+
+                    <div class="filter-header">
+
+                        <span class="section-eyebrow">
+                            REFINE
+                        </span>
+
+                        <h2>
+                            Your search.
+                        </h2>
+
+                    </div>
+
+
+                    <form
+                        method="GET"
+                        class="filter-form"
+                    >
+
+                        {% if request.GET.location %}
+
+                            <input
+                                type="hidden"
+                                name="location"
+                                value="{{ request.GET.location }}"
+                            >
+
+                        {% endif %}
+
+
+                        {% if request.GET.q %}
+
+                            <input
+                                type="hidden"
+                                name="q"
+                                value="{{ request.GET.q }}"
+                            >
+
+                        {% endif %}
+
+
+                        <div class="filter-group">
+
+                            <label for="min_price">
+                                Minimum price
+                            </label>
+
+                            <input
+                                id="min_price"
+                                name="min_price"
+                                type="number"
+                                min="0"
+                                placeholder="₹0"
+                                value="{{ request.GET.min_price }}"
+                            >
+
+                        </div>
+
+
+                        <div class="filter-group">
+
+                            <label for="max_price">
+                                Maximum price
+                            </label>
+
+                            <input
+                                id="max_price"
+                                name="max_price"
+                                type="number"
+                                min="0"
+                                placeholder="₹10,000"
+                                value="{{ request.GET.max_price }}"
+                            >
+
+                        </div>
+
+
+                        <div class="filter-group">
+
+                            <label for="rating">
+                                Minimum rating
+                            </label>
+
+                            <select
+                                id="rating"
+                                name="rating"
+                            >
+
+                                <option value="">
+                                    Any rating
+                                </option>
+
+                                <option value="5"
+                                    {% if request.GET.rating == "5" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    5 / 5
+                                </option>
+
+                                <option value="4"
+                                    {% if request.GET.rating == "4" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    4+ / 5
+                                </option>
+
+                                <option value="3"
+                                    {% if request.GET.rating == "3" %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    3+ / 5
+                                </option>
+
+                            </select>
+
+                        </div>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Apply filters
+                        </button>
+
+
+                        <a
+                            href="{% url 'hotel_list' %}"
+                            class="btn btn-ghost"
+                        >
+                            Clear filters
+                        </a>
+
+                    </form>
+
+                </aside>
+
+
+                <main class="hotels-grid">
+
+                    {% for hotel in hotels %}
+
+                        <div
+                            data-reveal
+                            data-reveal-delay="{{ forloop.counter0|add:'50' }}"
+                        >
+
+                            {% include "components/hotel_card.html" %}
+
+                        </div>
+
+                    {% endfor %}
+
+                </main>
+
+            </div>
+
+        {% else %}
+
+            <div
+                class="empty-state"
+                data-reveal
+            >
+
+                <div class="empty-state-icon">
+                    ◇
+                </div>
+
+                <h3>
+                    No stays found.
+                </h3>
+
+                <p>
+                    Try widening your price range,
+                    changing your destination,
+                    or clearing your filters.
+                </p>
+
+                <a
+                    href="{% url 'hotel_list' %}"
+                    class="btn btn-primary"
+                >
+                    Show all stays
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</section>
+
+{% endblock %}

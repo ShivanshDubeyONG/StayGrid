@@ -1,0 +1,390 @@
+/* =========================================================
+   STAYGRID — HOTEL DISCOVERY
+   ========================================================= */
+
+.hotels-page {
+    padding: 70px 0 110px;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.hotels-header {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 30px;
+
+    margin-bottom: 35px;
+}
+
+.hotels-header h1 {
+    margin: 8px 0 12px;
+
+    font-family: var(--font-display);
+
+    font-size: clamp(
+        3.4rem,
+        7vw,
+        6.5rem
+    );
+
+    font-weight: 500;
+
+    line-height: 0.88;
+
+    letter-spacing: -0.06em;
+}
+
+.hotels-header p {
+    margin: 0;
+
+    color: var(--color-text-secondary);
+
+    font-size: 0.72rem;
+}
+
+.hotels-result-count {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: flex-end;
+
+    padding-bottom: 5px;
+}
+
+.hotels-result-count strong {
+    font-family: var(--font-display);
+
+    font-size: 2rem;
+
+    font-weight: 500;
+
+    line-height: 1;
+}
+
+.hotels-result-count span {
+    color: var(--color-text-muted);
+
+    font-size: 0.58rem;
+
+    text-transform: uppercase;
+
+    letter-spacing: 0.08em;
+}
+
+
+/* =========================================================
+   SEARCH
+   ========================================================= */
+
+.hotels-search {
+    margin-bottom: 28px;
+}
+
+
+/* =========================================================
+   TOOLBAR
+   ========================================================= */
+
+.hotels-toolbar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding: 13px 16px;
+
+    margin-bottom: 20px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border-light);
+
+    border-radius: 14px;
+
+    box-shadow: var(--shadow-sm);
+}
+
+.hotels-toolbar-copy {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.hotels-toolbar-copy strong {
+    font-size: 0.68rem;
+}
+
+.sort-form {
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+}
+
+.sort-form label {
+    color: var(--color-text-muted);
+
+    font-size: 0.55rem;
+
+    font-weight: 800;
+
+    letter-spacing: 0.08em;
+}
+
+.sort-form select {
+    min-width: 155px;
+
+    padding: 9px 28px 9px 12px;
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    border: 1px solid transparent;
+
+    border-radius: 9px;
+
+    font: inherit;
+
+    font-size: 0.62rem;
+
+    font-weight: 700;
+
+    outline: none;
+}
+
+
+/* =========================================================
+   RESULTS LAYOUT
+   ========================================================= */
+
+.hotels-results {
+    display: grid;
+
+    grid-template-columns:
+        235px minmax(0, 1fr);
+
+    align-items: start;
+
+    gap: 25px;
+}
+
+
+/* =========================================================
+   FILTERS
+   ========================================================= */
+
+.hotels-filters {
+    position: sticky;
+
+    top: 95px;
+
+    padding: 23px;
+
+    background: var(--color-surface);
+
+    border: 1px solid var(--color-border-light);
+
+    border-radius: var(--radius-lg);
+
+    box-shadow: var(--shadow-sm);
+}
+
+.filter-header {
+    padding-bottom: 20px;
+
+    margin-bottom: 20px;
+
+    border-bottom: 1px solid var(--color-border-light);
+}
+
+.filter-header h2 {
+    margin: 7px 0 0;
+
+    font-size: 1.1rem;
+
+    letter-spacing: -0.035em;
+}
+
+.filter-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 16px;
+}
+
+.filter-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.filter-group label {
+    color: var(--color-text-secondary);
+
+    font-size: 0.6rem;
+
+    font-weight: 700;
+}
+
+.filter-group input,
+.filter-group select {
+    width: 100%;
+
+    min-height: 40px;
+
+    padding: 0 11px;
+
+    background: var(--color-surface-soft);
+
+    color: var(--color-text);
+
+    border: 1px solid var(--color-border-light);
+
+    border-radius: 8px;
+
+    font: inherit;
+
+    font-size: 0.64rem;
+
+    outline: none;
+
+    transition:
+        border-color 180ms ease,
+        box-shadow 180ms ease;
+}
+
+.filter-group input:focus,
+.filter-group select:focus {
+    border-color: var(--color-text);
+
+    box-shadow:
+        0 0 0 3px rgba(0,0,0,0.05);
+}
+
+.filter-form .btn {
+    width: 100%;
+}
+
+
+/* =========================================================
+   GRID
+   ========================================================= */
+
+.hotels-grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+
+    gap: 20px;
+}
+
+.hotels-grid > div {
+    min-width: 0;
+}
+
+
+/* =========================================================
+   MOBILE FILTER
+   ========================================================= */
+
+@media (max-width: 950px) {
+
+    .hotels-results {
+        grid-template-columns: 1fr;
+    }
+
+    .hotels-filters {
+        position: static;
+    }
+
+    .filter-form {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+    }
+
+    .filter-header {
+        grid-column: 1 / -1;
+    }
+
+    .filter-form .btn {
+        width: auto;
+    }
+
+}
+
+
+@media (max-width: 700px) {
+
+    .hotels-page {
+        padding: 50px 0 80px;
+    }
+
+    .hotels-header {
+        align-items: flex-start;
+
+        flex-direction: column;
+
+        gap: 18px;
+    }
+
+    .hotels-result-count {
+        align-items: flex-start;
+    }
+
+    .hotels-toolbar {
+        align-items: flex-start;
+
+        flex-direction: column;
+    }
+
+    .sort-form {
+        width: 100%;
+    }
+
+    .sort-form select {
+        flex: 1;
+    }
+
+    .hotels-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .filter-header {
+        grid-column: auto;
+    }
+
+    .filter-form .btn {
+        width: 100%;
+    }
+
+}

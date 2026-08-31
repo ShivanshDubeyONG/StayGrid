@@ -1,0 +1,254 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Create account — StayGrid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/auth.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="auth-page">
+
+    <div class="container">
+
+        <div class="auth-layout">
+
+            <!-- BRAND -->
+
+            <div class="auth-brand">
+
+                <div class="auth-brand-content">
+
+                    <div class="auth-brand-mark">
+                        S
+                    </div>
+
+                    <span class="section-eyebrow">
+                        JOIN STAYGRID
+                    </span>
+
+                    <h1>
+                        Travel<br>
+                        differently.
+                    </h1>
+
+                    <p>
+                        Create your account and start discovering
+                        stays ranked around what actually matters
+                        to you.
+                    </p>
+
+                    <div class="auth-stat">
+
+                        <span class="auth-stat-number">
+                            01
+                        </span>
+
+                        <span class="auth-stat-label">
+                            account between you and your next stay
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <div class="auth-brand-footer">
+                    <span>STAYGRID</span>
+                    <span>·</span>
+                    <span>STAY BETTER</span>
+                </div>
+
+            </div>
+
+
+            <!-- REGISTER FORM -->
+
+            <div class="auth-form-panel">
+
+                <div class="auth-form-wrap">
+
+                    <header class="auth-form-header">
+
+                        <span class="section-eyebrow">
+                            GET STARTED
+                        </span>
+
+                        <h2>
+                            Create your account.
+                        </h2>
+
+                        <p>
+                            It only takes a minute.
+                        </p>
+
+                    </header>
+
+
+                    {% if form.errors %}
+
+                        <div class="auth-errors">
+
+                            <ul>
+
+                                {% for field in form %}
+
+                                    {% for error in field.errors %}
+
+                                        <li>
+                                            {{ error }}
+                                        </li>
+
+                                    {% endfor %}
+
+                                {% endfor %}
+
+
+                                {% for error in form.non_field_errors %}
+
+                                    <li>
+                                        {{ error }}
+                                    </li>
+
+                                {% endfor %}
+
+                            </ul>
+
+                        </div>
+
+                    {% endif %}
+
+
+                    <form
+                        method="POST"
+                        class="auth-form"
+                    >
+
+                        {% csrf_token %}
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="id_username"
+                            >
+                                Username
+                            </label>
+
+                            <input
+                                id="id_username"
+                                name="username"
+                                type="text"
+                                class="form-control"
+                                autocomplete="username"
+                                placeholder="Choose a username"
+                                required
+                                autofocus
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="id_email"
+                            >
+                                Email
+                            </label>
+
+                            <input
+                                id="id_email"
+                                name="email"
+                                type="email"
+                                class="form-control"
+                                autocomplete="email"
+                                placeholder="you@example.com"
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="id_password1"
+                            >
+                                Password
+                            </label>
+
+                            <input
+                                id="id_password1"
+                                name="password1"
+                                type="password"
+                                class="form-control"
+                                autocomplete="new-password"
+                                placeholder="Create a password"
+                                required
+                            >
+
+                        </div>
+
+
+                        <div class="form-group">
+
+                            <label
+                                class="form-label"
+                                for="id_password2"
+                            >
+                                Confirm password
+                            </label>
+
+                            <input
+                                id="id_password2"
+                                name="password2"
+                                type="password"
+                                class="form-control"
+                                autocomplete="new-password"
+                                placeholder="Repeat your password"
+                                required
+                            >
+
+                        </div>
+
+
+                        <p class="auth-password-help">
+                            Use a strong password you don't use elsewhere.
+                        </p>
+
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary"
+                        >
+                            Create account
+                        </button>
+
+                    </form>
+
+
+                    <p class="auth-switch">
+
+                        Already have an account?
+
+                        <a href="{% url 'login' %}">
+                            Log in
+                        </a>
+
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}

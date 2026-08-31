@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Booking Confirmed — StayGrid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<section class="booking-page">
+
+    <div class="container">
+
+        <div class="booking-success">
+
+            <div class="booking-success-icon">
+                ✓
+            </div>
+
+            <span class="section-eyebrow">
+                STAYGRID CONFIRMED
+            </span>
+
+            <h1>
+                Your stay is booked.
+            </h1>
+
+            <p>
+                Your reservation has been successfully created.
+                Keep this page handy for your trip.
+            </p>
+
+
+            {% if booking %}
+
+                <div class="price-row">
+
+                    <span>
+                        Hotel
+                    </span>
+
+                    <strong>
+                        {{ booking.room.hotel.name }}
+                    </strong>
+
+                </div>
+
+                <div class="price-row">
+
+                    <span>
+                        Room
+                    </span>
+
+                    <strong>
+                        {{ booking.room.room_type }}
+                    </strong>
+
+                </div>
+
+                <div class="price-row">
+
+                    <span>
+                        Check in
+                    </span>
+
+                    <strong>
+                        {{ booking.check_in }}
+                    </strong>
+
+                </div>
+
+                <div class="price-row">
+
+                    <span>
+                        Check out
+                    </span>
+
+                    <strong>
+                        {{ booking.check_out }}
+                    </strong>
+
+                </div>
+
+            {% endif %}
+
+
+            <div
+                style="
+                    display:flex;
+                    justify-content:center;
+                    gap:10px;
+                    flex-wrap:wrap;
+                    margin-top:25px;
+                "
+            >
+
+                <a
+                    href="{% url 'hotel_list' %}"
+                    class="btn btn-primary"
+                >
+                    Explore more stays
+                </a>
+
+                <a
+                    href="{% url 'my_bookings' %}"
+                    class="btn btn-secondary"
+                >
+                    My bookings
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+{% endblock %}
