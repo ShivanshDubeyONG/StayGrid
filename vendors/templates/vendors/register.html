@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Become a Partner | StayGrid</title>
+</head>
+
+<body>
+
+    <h1>Become a StayGrid Partner</h1>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        <input
+            type="text"
+            name="business_name"
+            placeholder="Business name"
+            required
+        >
+
+        <input
+            type="text"
+            name="first_name"
+            placeholder="First name"
+            required
+        >
+
+        <input
+            type="text"
+            name="last_name"
+            placeholder="Last name"
+            required
+        >
+
+        <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            required
+        >
+
+        <input
+            type="email"
+            name="email"
+            placeholder="Business email"
+            required
+        >
+
+        <input
+            type="text"
+            name="phone_number"
+            placeholder="Phone number"
+            required
+        >
+
+        <input
+            type="password"
+            name="password"
+            placeholder="Password"
+            required
+        >
+
+        <input
+            type="password"
+            name="confirm_password"
+            placeholder="Confirm password"
+            required
+        >
+
+        <button type="submit">
+            Create Vendor Account
+        </button>
+    </form>
+
+    <p>
+        Already a partner?
+        <a href="{% url 'vendor_login' %}">Vendor login</a>
+    </p>
+
+    <p>
+        <a href="{% url 'home' %}">Back to StayGrid</a>
+    </p>
+
+</body>
+</html>

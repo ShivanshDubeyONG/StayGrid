@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Add Hotel | StayGrid</title>
+</head>
+
+<body>
+
+    <h1>Add a Hotel</h1>
+
+    <p>
+        Add your property to StayGrid.
+    </p>
+
+    {% if messages %}
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <div>
+            <label for="{{ form.name.id_for_label }}">
+                Hotel Name
+            </label>
+
+            {{ form.name }}
+
+            {{ form.name.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label for="{{ form.description.id_for_label }}">
+                Description
+            </label>
+
+            {{ form.description }}
+
+            {{ form.description.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label for="{{ form.location.id_for_label }}">
+                Location
+            </label>
+
+            {{ form.location }}
+
+            {{ form.location.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label for="{{ form.original_price.id_for_label }}">
+                Original Price / Night
+            </label>
+
+            {{ form.original_price }}
+
+            {{ form.original_price.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label for="{{ form.offer_price.id_for_label }}">
+                Offer Price / Night
+            </label>
+
+            {{ form.offer_price }}
+
+            {{ form.offer_price.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label for="{{ form.star_rating.id_for_label }}">
+                Star Rating
+            </label>
+
+            {{ form.star_rating }}
+
+            {{ form.star_rating.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label>
+                Amenities
+            </label>
+
+            {{ form.amenities }}
+
+            {{ form.amenities.errors }}
+        </div>
+
+        <br>
+
+        <div>
+            <label>
+                <input
+                    type="checkbox"
+                    name="is_active"
+                    {% if form.is_active.value %}checked{% endif %}
+                >
+
+                List this hotel immediately
+            </label>
+        </div>
+
+        <br>
+
+        <button type="submit">
+            Create Hotel
+        </button>
+    </form>
+
+    <br>
+
+    <a href="{% url 'vendor_dashboard' %}">
+        ← Back to Dashboard
+    </a>
+
+</body>
+</html>

@@ -1,8 +1,159 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-{% block title %}StayGrid | Vendor Dashboard{% endblock %}
+    <title>Vendor Dashboard | StayGrid</title>
+</head>
 
-{% block content %}
-<h1>Vendor Dashboard</h1>
-<p>Track listings, bookings, and partner performance.</p>
-{% endblock %}
+<body>
+
+    <header>
+
+        <nav>
+            <a href="{% url 'home' %}">
+                StayGrid
+            </a>
+
+            <a href="{% url 'vendor_logout' %}">
+                Logout
+            </a>
+        </nav>
+
+    </header>
+
+
+    <main>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+
+        <section>
+
+            <h1>
+                Welcome, {{ vendor.business_name }}
+            </h1>
+
+            <p>
+                Manage your properties, rooms and bookings.
+            </p>
+
+            <a href="{% url 'create_hotel' %}">
+                + Add Hotel
+            </a>
+
+        </section>
+
+
+        <hr>
+
+
+        <section>
+
+            <h2>Overview</h2>
+
+            <p>
+                Total Hotels:
+                <strong>{{ hotels|length }}</strong>
+            </p>
+
+            <p>
+                Account:
+                {% if vendor.is_verified %}
+                    Verified
+                {% else %}
+                    Pending Verification
+                {% endif %}
+            </p>
+
+        </section>
+
+
+        <hr>
+
+
+        <section>
+
+            <h2>My Hotels</h2>
+
+            {% if hotels %}
+
+                {% for hotel in hotels %}
+
+                    <article>
+
+                        <h3>
+                            {{ hotel.name }}
+                        </h3>
+
+                        <p>
+                            📍 {{ hotel.location }}
+                        </p>
+
+                        <p>
+                            ⭐ {{ hotel.star_rating }}/5
+                        </p>
+
+                        <p>
+                            ₹{{ hotel.offer_price }} / night
+                        </p>
+
+                        <p>
+                            Rooms:
+                            <strong>
+                                {{ hotel.rooms.count }}
+                            </strong>
+                        </p>
+
+                        <p>
+
+                            {% if hotel.is_active %}
+                                🟢 Active
+                            {% else %}
+                                🔴 Inactive
+                            {% endif %}
+
+                        </p>
+
+
+                        <a href="{% url 'manage_hotel' hotel.id %}">
+                            Manage Rooms
+                        </a>
+
+                        &nbsp;
+
+                        <a href="{% url 'edit_hotel' hotel.id %}">
+                            Edit Hotel
+                        </a>
+
+                    </article>
+
+                    <hr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <h3>No hotels yet.</h3>
+
+                <p>
+                    Add your first property to start receiving bookings.
+                </p>
+
+                <a href="{% url 'create_hotel' %}">
+                    Add Your First Hotel
+                </a>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+</html>

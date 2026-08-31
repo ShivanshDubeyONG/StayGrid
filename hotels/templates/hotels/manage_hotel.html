@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{{ hotel.name }} | StayGrid</title>
+</head>
+
+<body>
+
+    <nav>
+        <a href="{% url 'vendor_dashboard' %}">
+            ← Vendor Dashboard
+        </a>
+    </nav>
+
+
+    <main>
+
+        {% if messages %}
+            {% for message in messages %}
+                <p>{{ message }}</p>
+            {% endfor %}
+        {% endif %}
+
+
+        <h1>{{ hotel.name }}</h1>
+
+        <p>
+            📍 {{ hotel.location }}
+        </p>
+
+        <p>
+            ⭐ {{ hotel.star_rating }}/5
+        </p>
+
+        <p>
+            {{ hotel.description }}
+        </p>
+
+
+        <hr>
+
+
+        <section>
+
+            <h2>Hotel Amenities</h2>
+
+            {% if hotel.amenities.all %}
+
+                {% for amenity in hotel.amenities.all %}
+                    <span>
+                        {{ amenity.name }}
+                    </span>
+                {% endfor %}
+
+            {% else %}
+
+                <p>No amenities added.</p>
+
+            {% endif %}
+
+        </section>
+
+
+        <hr>
+
+
+        <section>
+
+            <h2>Rooms</h2>
+
+            <a href="{% url 'create_room' hotel.id %}">
+                + Add Room
+            </a>
+
+
+            {% if rooms %}
+
+                {% for room in rooms %}
+
+                    <article>
+
+                        <h3>
+                            Room {{ room.room_number }}
+                        </h3>
+
+                        <p>
+                            Type:
+                            {{ room.get_room_type_display }}
+                        </p>
+
+                        <p>
+                            Capacity:
+                            {{ room.capacity }} guests
+                        </p>
+
+                        <p>
+                            ₹{{ room.price_per_night }} / night
+                        </p>
+
+                        <p>
+
+                            {% if room.is_active %}
+                                🟢 Available
+                            {% else %}
+                                🔴 Inactive
+                            {% endif %}
+
+                        </p>
+
+
+                        <a href="{% url 'edit_room' room.id %}">
+                            Edit Room
+                        </a>
+
+
+                        <form
+                            method="POST"
+                            action="{% url 'delete_room' room.id %}"
+                            style="display:inline;"
+                        >
+
+                            {% csrf_token %}
+
+                            <button type="submit">
+                                Delete
+                            </button>
+
+                        </form>
+
+                    </article>
+
+                    <hr>
+
+                {% endfor %}
+
+            {% else %}
+
+                <p>
+                    This hotel has no rooms yet.
+                </p>
+
+                <a href="{% url 'create_room' hotel.id %}">
+                    Add the first room
+                </a>
+
+            {% endif %}
+
+        </section>
+
+    </main>
+
+</body>
+</html>
