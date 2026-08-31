@@ -48,12 +48,6 @@ class Hotel(models.Model):
         ]
     )
 
-    amenities = models.ManyToManyField(
-        Amenity,
-        blank=True,
-        related_name="hotels"
-    )
-
     is_active = models.BooleanField(default=True)
 
     created_at = models.DateTimeField(

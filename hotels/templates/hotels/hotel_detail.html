@@ -81,30 +81,6 @@
 
     </section>
 
-
-    <section>
-
-        <h2>
-            Amenities
-        </h2>
-
-        {% for amenity in hotel.amenities.all %}
-
-            <span>
-                ✓ {{ amenity.name }}
-            </span>
-
-        {% empty %}
-
-            <p>
-                No amenities listed.
-            </p>
-
-        {% endfor %}
-
-    </section>
-
-
     <hr>
 
 

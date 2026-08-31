@@ -50,9 +50,6 @@ class HotelAdmin(admin.ModelAdmin):
         "owner__business_name",
     )
 
-    filter_horizontal = (
-        "amenities",
-    )
 
     inlines = [
         HotelImageInline,

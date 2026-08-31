@@ -42,25 +42,6 @@
 
         <hr>
 
-
-        <section>
-
-            <h2>Hotel Amenities</h2>
-
-            {% if hotel.amenities.all %}
-
-                {% for amenity in hotel.amenities.all %}
-                    <span>
-                        {{ amenity.name }}
-                    </span>
-                {% endfor %}
-
-            {% else %}
-
-                <p>No amenities added.</p>
-
-            {% endif %}
-
         </section>
 
 

@@ -17,7 +17,6 @@ class HotelForm(forms.ModelForm):
             "original_price",
             "offer_price",
             "star_rating",
-            "amenities",
             "is_active",
         ]
 
@@ -25,7 +24,6 @@ class HotelForm(forms.ModelForm):
             "description": forms.Textarea(
                 attrs={"rows": 5}
             ),
-            "amenities": forms.CheckboxSelectMultiple(),
         }
 
 

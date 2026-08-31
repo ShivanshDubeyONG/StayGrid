@@ -44,7 +44,6 @@ def hotel_list(request):
         Hotel.objects
         .filter(is_active=True)
         .prefetch_related(
-            "amenities",
             "images",
             "rooms",
         )
@@ -128,13 +127,6 @@ def stay_score(hotel):
     else:
         price_score = 10
 
-    amenity_count = hotel.amenities.count()
-
-    amenity_score = min(
-        amenity_count * 3,
-        15
-    )
-
     review_score = min(
         (hotel.review_count or 0) * 1,
         10
@@ -150,7 +142,6 @@ def stay_score(hotel):
     return round(
         rating_score
         + price_score
-        + amenity_score
         + review_score
         + availability_score,
         1,
@@ -160,11 +151,15 @@ def stay_score(hotel):
 def hotel_detail(request, hotel_id):
 
     hotel = get_object_or_404(
-        Hotel.objects.prefetch_related(
-            "amenities",
+        Hotel.objects
+        .prefetch_related(
             "images",
             "rooms",
             "reviews__user",
+        )
+        .annotate(
+            review_average=Avg("reviews__rating"),
+            review_count=Count("reviews"),
         ),
         id=hotel_id,
         is_active=True,

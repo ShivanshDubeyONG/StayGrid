@@ -34,7 +34,6 @@ class Migration(migrations.Migration):
                 ('is_active', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('amenities', models.ManyToManyField(blank=True, related_name='hotels', to='hotels.amenity')),
                 ('owner', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='hotels', to=settings.AUTH_USER_MODEL)),
             ],
         ),
