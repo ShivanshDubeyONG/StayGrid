@@ -569,3 +569,44 @@
     }
 
 }
+
+/* =========================================================
+   STAYGRID — TYPOGRAPHY SCALE OVERRIDE
+   ========================================================= */
+
+.home-hero-description {
+    max-width: 680px;
+    font-size: 1.05rem;
+    line-height: 1.7;
+}
+
+.home-hero-meta {
+    font-size: 0.9rem;
+}
+
+.home-hero-count {
+    font-size: 0.85rem;
+}
+
+.home-hero-count strong {
+    font-size: 0.95rem;
+}
+
+.home-benefit h3 {
+    font-size: 1.2rem;
+}
+
+.home-benefit p {
+    font-size: 0.9rem;
+    line-height: 1.7;
+}
+
+.home-score-copy p {
+    font-size: 0.95rem;
+    line-height: 1.75;
+}
+
+.home-cta-card p {
+    font-size: 0.95rem;
+    line-height: 1.7;
+}

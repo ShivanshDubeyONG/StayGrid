@@ -38,19 +38,19 @@
     --font-body: "DM Sans", sans-serif;
     --font-display: "Playfair Display", serif;
 
-    --text-xs: 0.72rem;
-    --text-sm: 0.82rem;
-    --text-base: 1rem;
-    --text-lg: 1.15rem;
-    --text-xl: 1.35rem;
-    --text-2xl: 1.8rem;
-    --text-3xl: 2.5rem;
-    --text-4xl: 3.5rem;
-    --text-5xl: 5rem;
+    --text-xs: 0.82rem;
+    --text-sm: 0.95rem;
+    --text-base: 1.05rem;
+    --text-lg: 1.2rem;
+    --text-xl: 1.45rem;
+    --text-2xl: 2rem;
+    --text-3xl: 2.75rem;
+    --text-4xl: 3.75rem;
+    --text-5xl: 5.5rem;
 
-    --line-tight: 1.05;
-    --line-heading: 1.12;
-    --line-body: 1.6;
+    --line-tight: 1.02;
+    --line-heading: 1.08;
+    --line-body: 1.65;
 
 
     /* ---------- Layout ---------- */

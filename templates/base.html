@@ -3,7 +3,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>{% block title %}StayGrid{% endblock %}</title>
 
@@ -12,14 +15,20 @@
         content="Discover stays worth remembering with StayGrid."
     >
 
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        rel="preconnect"
+        href="https://fonts.gstatic.com"
+        crossorigin
+    >
 
     <link
         href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
         rel="stylesheet"
     >
 
+    <!-- Core design system -->
     <link
         rel="stylesheet"
         href="{% static 'css/variables.css' %}"
@@ -30,16 +39,25 @@
         href="{% static 'css/base.css' %}"
     >
 
+    <!-- Shared components -->
     <link
         rel="stylesheet"
         href="{% static 'css/components.css' %}"
     >
 
+    <!-- Navigation -->
+    <link
+        rel="stylesheet"
+        href="{% static 'css/navbar.css' %}"
+    >
+
+    <!-- Motion -->
     <link
         rel="stylesheet"
         href="{% static 'css/animations.css' %}"
     >
 
+    <!-- Responsive overrides -->
     <link
         rel="stylesheet"
         href="{% static 'css/responsive.css' %}"
@@ -50,8 +68,10 @@
 
 <body>
 
+    <!-- Navigation -->
     {% include "components/navbar.html" %}
 
+    <!-- Main content -->
     <main id="main-content">
 
         {% include "components/flash_messages.html" %}
@@ -61,10 +81,16 @@
 
     </main>
 
+    <!-- Footer -->
     {% include "components/footer.html" %}
 
+    <!-- Core JavaScript -->
     <script src="{% static 'js/main.js' %}"></script>
+
+    <!-- Navigation JavaScript -->
     <script src="{% static 'js/navbar.js' %}"></script>
+
+    <!-- Animation JavaScript -->
     <script src="{% static 'js/animations.js' %}"></script>
 
     {% block extra_js %}{% endblock %}

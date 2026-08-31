@@ -15,40 +15,59 @@ def register(request):
     if request.method == "POST":
 
         username = request.POST.get(
-            "username", ""
+            "username",
+            ""
         ).strip()
 
         email = request.POST.get(
-            "email", ""
+            "email",
+            ""
         ).strip()
 
         first_name = request.POST.get(
-            "first_name", ""
+            "first_name",
+            ""
         ).strip()
 
         last_name = request.POST.get(
-            "last_name", ""
+            "last_name",
+            ""
         ).strip()
 
         phone = request.POST.get(
-            "phone_number", ""
+            "phone_number",
+            ""
         ).strip()
 
         password = request.POST.get(
-            "password", ""
+            "password",
+            ""
         )
 
         confirm = request.POST.get(
-            "confirm_password", ""
+            "confirm_password",
+            ""
         )
 
-        if password != confirm:
+        if not username:
+            messages.error(
+                request,
+                "Username is required."
+            )
+            return redirect("register")
 
+        if not password:
+            messages.error(
+                request,
+                "Password is required."
+            )
+            return redirect("register")
+
+        if password != confirm:
             messages.error(
                 request,
                 "Passwords do not match."
             )
-
             return redirect("register")
 
         if User.objects.filter(
@@ -59,10 +78,9 @@ def register(request):
                 request,
                 "Username already exists."
             )
-
             return redirect("register")
 
-        if User.objects.filter(
+        if email and User.objects.filter(
             email=email
         ).exists():
 
@@ -70,7 +88,16 @@ def register(request):
                 request,
                 "Email already exists."
             )
+            return redirect("register")
 
+        if phone and CustomerProfile.objects.filter(
+            phone_number=phone
+        ).exists():
+
+            messages.error(
+                request,
+                "Phone number already exists."
+            )
             return redirect("register")
 
         user = User.objects.create_user(
@@ -81,10 +108,11 @@ def register(request):
             password=password,
         )
 
-        CustomerProfile.objects.create(
-            user=user,
-            phone_number=phone,
-        )
+        if phone:
+            CustomerProfile.objects.create(
+                user=user,
+                phone_number=phone,
+            )
 
         messages.success(
             request,
@@ -107,11 +135,13 @@ def login_view(request):
     if request.method == "POST":
 
         username = request.POST.get(
-            "username"
-        )
+            "username",
+            ""
+        ).strip()
 
         password = request.POST.get(
-            "password"
+            "password",
+            ""
         )
 
         user = authenticate(
@@ -129,7 +159,10 @@ def login_view(request):
 
             return redirect("login")
 
-        login(request, user)
+        login(
+            request,
+            user
+        )
 
         return redirect("home")
 
@@ -150,11 +183,88 @@ def logout_view(request):
 @login_required
 def profile(request):
 
+    profile, created = (
+        CustomerProfile.objects.get_or_create(
+            user=request.user,
+            defaults={
+                "phone_number": (
+                    f"auto-{request.user.id}"
+                )
+            },
+        )
+    )
+
+    if request.method == "POST":
+
+        first_name = request.POST.get(
+            "first_name",
+            ""
+        ).strip()
+
+        last_name = request.POST.get(
+            "last_name",
+            ""
+        ).strip()
+
+        email = request.POST.get(
+            "email",
+            ""
+        ).strip()
+
+        phone = request.POST.get(
+            "phone_number",
+            ""
+        ).strip()
+
+        if first_name:
+            request.user.first_name = first_name
+
+        else:
+            request.user.first_name = ""
+
+        request.user.last_name = last_name
+
+        request.user.email = email
+
+        request.user.save(
+            update_fields=[
+                "first_name",
+                "last_name",
+                "email",
+            ]
+        )
+
+        if phone and phone != profile.phone_number:
+
+            if CustomerProfile.objects.filter(
+                phone_number=phone
+            ).exclude(
+                user=request.user
+            ).exists():
+
+                messages.error(
+                    request,
+                    "That phone number is already in use."
+                )
+
+                return redirect("profile")
+
+            profile.phone_number = phone
+            profile.save(
+                update_fields=["phone_number"]
+            )
+
+        messages.success(
+            request,
+            "Profile updated successfully."
+        )
+
+        return redirect("profile")
+
     return render(
         request,
         "users/profile.html",
         {
-            "profile":
-                request.user.customer_profile,
+            "profile": profile,
         },
     )
