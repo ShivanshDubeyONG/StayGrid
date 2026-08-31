@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hotels | StayGrid</title>
+</head>
+
+<body>
+
+<nav>
+    <a href="{% url 'home' %}">StayGrid</a>
+    <a href="{% url 'hotel_list' %}">Hotels</a>
+
+    {% if user.is_authenticated %}
+        <a href="{% url 'profile' %}">Profile</a>
+        <a href="{% url 'logout' %}">Logout</a>
+    {% else %}
+        <a href="{% url 'login' %}">Login</a>
+    {% endif %}
+</nav>
+
+<main>
+
+    <h1>Find your stay</h1>
+
+    <form method="GET">
+
+        <input
+            type="text"
+            name="q"
+            placeholder="Hotel, city or keyword"
+            value="{{ query }}"
+        >
+
+        <input
+            type="text"
+            name="location"
+            placeholder="Location"
+            value="{{ location }}"
+        >
+
+        <input
+            type="number"
+            name="min_price"
+            placeholder="Min price"
+            value="{{ min_price }}"
+        >
+
+        <input
+            type="number"
+            name="max_price"
+            placeholder="Max price"
+            value="{{ max_price }}"
+        >
+
+        <select name="rating">
+            <option value="">Any rating</option>
+            <option value="3" {% if rating == "3" %}selected{% endif %}>
+                3+ stars
+            </option>
+            <option value="4" {% if rating == "4" %}selected{% endif %}>
+                4+ stars
+            </option>
+            <option value="5" {% if rating == "5" %}selected{% endif %}>
+                5 stars
+            </option>
+        </select>
+
+        <button type="submit">
+            Search
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h2>
+        {{ hotels|length }} stays found
+    </h2>
+
+    {% if hotels %}
+
+        {% for hotel in hotels %}
+
+            <article>
+
+                {% with first_image=hotel.images.first %}
+
+                    {% if first_image %}
+                        <img
+                            src="{{ first_image.image.url }}"
+                            alt="{{ hotel.name }}"
+                            width="300"
+                        >
+                    {% endif %}
+
+                {% endwith %}
+
+                <h2>{{ hotel.name }}</h2>
+
+                <p>
+                    📍 {{ hotel.location }}
+                </p>
+
+                <p>
+                    ⭐ {{ hotel.star_rating }}/5
+                </p>
+
+                <p>
+                    ₹{{ hotel.offer_price }} / night
+
+                    {% if hotel.original_price > hotel.offer_price %}
+                        <del>
+                            ₹{{ hotel.original_price }}
+                        </del>
+                    {% endif %}
+                </p>
+
+                <p>
+                    {{ hotel.description|truncatewords:20 }}
+                </p>
+
+                <p>
+                    {{ hotel.rooms.count }} rooms
+                </p>
+
+                <a href="{% url 'hotel_detail' hotel.id %}">
+                    View Hotel
+                </a>
+
+            </article>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <h2>No stays found</h2>
+
+        <p>
+            Try changing your search or filters.
+        </p>
+
+    {% endif %}
+
+</main>
+
+</body>
+</html>

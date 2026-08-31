@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Book {{ hotel.name }} | StayGrid
+    </title>
+
+</head>
+
+
+<body>
+
+<nav>
+
+    <a href="{% url 'hotel_detail' hotel.id %}">
+        ← Back to Hotel
+    </a>
+
+</nav>
+
+
+<main>
+
+    <h1>
+        Book Your Stay
+    </h1>
+
+    <h2>
+        {{ hotel.name }}
+    </h2>
+
+    <p>
+        {{ room.get_room_type_display }}
+        ·
+        Room {{ room.room_number }}
+    </p>
+
+    <p>
+        ₹{{ room.price_per_night }}
+        / night
+    </p>
+
+
+    <hr>
+
+
+    <form method="POST">
+
+        {% csrf_token %}
+
+        {{ form.non_field_errors }}
+
+        <p>
+
+            <label>
+                Check-in
+            </label>
+
+            {{ form.check_in }}
+
+            {{ form.check_in.errors }}
+
+        </p>
+
+
+        <p>
+
+            <label>
+                Check-out
+            </label>
+
+            {{ form.check_out }}
+
+            {{ form.check_out.errors }}
+
+        </p>
+
+
+        <button type="submit">
+            Check Availability & Book
+        </button>
+
+    </form>
+
+</main>
+
+</body>
+
+</html>

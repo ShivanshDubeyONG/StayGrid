@@ -1,9 +1,12 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.utils import timezone
 
-from .models import Hotel, Room
+from .models import Hotel, Room, Review
 
 
 class HotelForm(forms.ModelForm):
+
     class Meta:
         model = Hotel
 
@@ -20,16 +23,14 @@ class HotelForm(forms.ModelForm):
 
         widgets = {
             "description": forms.Textarea(
-                attrs={
-                    "rows": 5,
-                    "placeholder": "Describe the hotel..."
-                }
+                attrs={"rows": 5}
             ),
             "amenities": forms.CheckboxSelectMultiple(),
         }
 
 
 class RoomForm(forms.ModelForm):
+
     class Meta:
         model = Room
 
@@ -41,21 +42,64 @@ class RoomForm(forms.ModelForm):
             "is_active",
         ]
 
+
+class BookingForm(forms.Form):
+
+    check_in = forms.DateField(
+        widget=forms.DateInput(
+            attrs={"type": "date"}
+        )
+    )
+
+    check_out = forms.DateField(
+        widget=forms.DateInput(
+            attrs={"type": "date"}
+        )
+    )
+
+    def clean(self):
+
+        data = super().clean()
+
+        check_in = data.get("check_in")
+        check_out = data.get("check_out")
+
+        if check_in and check_in < timezone.localdate():
+            raise ValidationError(
+                "Check-in cannot be in the past."
+            )
+
+        if check_in and check_out:
+
+            if check_out <= check_in:
+                raise ValidationError(
+                    "Check-out must be after check-in."
+                )
+
+        return data
+
+
+class ReviewForm(forms.ModelForm):
+
+    class Meta:
+        model = Review
+
+        fields = [
+            "rating",
+            "comment",
+        ]
+
         widgets = {
-            "room_number": forms.TextInput(
+            "rating": forms.NumberInput(
                 attrs={
-                    "placeholder": "e.g. 101"
+                    "min": 1,
+                    "max": 5
                 }
             ),
-            "capacity": forms.NumberInput(
+            "comment": forms.Textarea(
                 attrs={
-                    "min": 1
-                }
-            ),
-            "price_per_night": forms.NumberInput(
-                attrs={
-                    "min": 0,
-                    "step": "0.01"
+                    "rows": 4,
+                    "placeholder": "Tell us about your stay..."
                 }
             ),
         }

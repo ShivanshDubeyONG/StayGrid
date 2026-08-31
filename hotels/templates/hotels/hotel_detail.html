@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        {{ hotel.name }} | StayGrid
+    </title>
+
+</head>
+
+
+<body>
+
+<nav>
+
+    <a href="{% url 'home' %}">
+        StayGrid
+    </a>
+
+    <a href="{% url 'hotel_list' %}">
+        Hotels
+    </a>
+
+    {% if user.is_authenticated %}
+
+        <a href="{% url 'my_bookings' %}">
+            My Bookings
+        </a>
+
+    {% endif %}
+
+</nav>
+
+
+<main>
+
+    <h1>
+        {{ hotel.name }}
+    </h1>
+
+    <p>
+        📍 {{ hotel.location }}
+    </p>
+
+    <p>
+        ⭐ {{ hotel.star_rating }}/5
+    </p>
+
+    {% if average_rating %}
+
+        <p>
+            Guest rating:
+            <strong>
+                {{ average_rating|floatformat:1 }}/5
+            </strong>
+        </p>
+
+    {% endif %}
+
+
+    <hr>
+
+
+    <section>
+
+        <h2>
+            About
+        </h2>
+
+        <p>
+            {{ hotel.description }}
+        </p>
+
+    </section>
+
+
+    <section>
+
+        <h2>
+            Amenities
+        </h2>
+
+        {% for amenity in hotel.amenities.all %}
+
+            <span>
+                ✓ {{ amenity.name }}
+            </span>
+
+        {% empty %}
+
+            <p>
+                No amenities listed.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+
+    <hr>
+
+
+    <section>
+
+        <h2>
+            Rooms
+        </h2>
+
+
+        {% for room in hotel.rooms.all %}
+
+            {% if room.is_active %}
+
+                <article>
+
+                    <h3>
+                        {{ room.get_room_type_display }}
+                    </h3>
+
+                    <p>
+                        Room {{ room.room_number }}
+                    </p>
+
+                    <p>
+                        Sleeps
+                        {{ room.capacity }}
+                        guests
+                    </p>
+
+                    <h3>
+                        ₹{{ room.price_per_night }}
+                        / night
+                    </h3>
+
+
+                    {% if user.is_authenticated %}
+
+                        <a
+                            href="{% url 'book_room' room.id %}"
+                        >
+                            Check Availability →
+                        </a>
+
+                    {% else %}
+
+                        <a
+                            href="{% url 'login' %}?next={% url 'book_room' room.id %}"
+                        >
+                            Login to Book
+                        </a>
+
+                    {% endif %}
+
+                </article>
+
+                <hr>
+
+            {% endif %}
+
+        {% empty %}
+
+            <p>
+                No rooms currently available.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+
+    <hr>
+
+
+    <section>
+
+        <h2>
+            Guest Reviews
+        </h2>
+
+
+        {% for review in reviews %}
+
+            <article>
+
+                <strong>
+                    {{ review.rating }}/5
+                </strong>
+
+                <p>
+                    {{ review.comment }}
+                </p>
+
+                <small>
+                    {{ review.user.username }}
+                    ·
+                    {{ review.created_at|date:"M d, Y" }}
+                </small>
+
+            </article>
+
+            <hr>
+
+        {% empty %}
+
+            <p>
+                No reviews yet.
+            </p>
+
+        {% endfor %}
+
+    </section>
+
+</main>
+
+</body>
+
+</html>

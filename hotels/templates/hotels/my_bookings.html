@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        My Bookings | StayGrid
+    </title>
+
+</head>
+
+
+<body>
+
+<nav>
+
+    <a href="{% url 'home' %}">
+        StayGrid
+    </a>
+
+    <a href="{% url 'hotel_list' %}">
+        Hotels
+    </a>
+
+</nav>
+
+
+<main>
+
+    <h1>
+        My Bookings
+    </h1>
+
+
+    {% if bookings %}
+
+        {% for booking in bookings %}
+
+            <article>
+
+                <h2>
+                    {{ booking.room.hotel.name }}
+                </h2>
+
+                <p>
+                    {{ booking.room.get_room_type_display }}
+                    ·
+                    Room {{ booking.room.room_number }}
+                </p>
+
+                <p>
+                    {{ booking.check_in }}
+                    →
+                    {{ booking.check_out }}
+                </p>
+
+                <p>
+                    Total:
+                    ₹{{ booking.total_price }}
+                </p>
+
+                <p>
+                    Status:
+                    <strong>
+                        {{ booking.get_status_display }}
+                    </strong>
+                </p>
+
+                <small>
+                    Booked
+                    {{ booking.created_at|date:"M d, Y H:i" }}
+                </small>
+
+            </article>
+
+            <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <h2>
+            No bookings yet.
+        </h2>
+
+        <a href="{% url 'hotel_list' %}">
+            Explore Hotels
+        </a>
+
+    {% endif %}
+
+</main>
+
+</body>
+
+</html>

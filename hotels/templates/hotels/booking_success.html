@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Booking Confirmed | StayGrid
+    </title>
+
+</head>
+
+
+<body>
+
+<main>
+
+    <h1>
+        🎉 Booking Confirmed!
+    </h1>
+
+    <p>
+        Your StayGrid reservation has been successfully created.
+    </p>
+
+
+    <hr>
+
+
+    <h2>
+        {{ booking.room.hotel.name }}
+    </h2>
+
+    <p>
+        {{ booking.room.get_room_type_display }}
+        ·
+        Room {{ booking.room.room_number }}
+    </p>
+
+    <p>
+        Check-in:
+        <strong>
+            {{ booking.check_in }}
+        </strong>
+    </p>
+
+    <p>
+        Check-out:
+        <strong>
+            {{ booking.check_out }}
+        </strong>
+    </p>
+
+    <p>
+        Total:
+        <strong>
+            ₹{{ booking.total_price }}
+        </strong>
+    </p>
+
+    <p>
+        Status:
+        <strong>
+            {{ booking.get_status_display }}
+        </strong>
+    </p>
+
+
+    <hr>
+
+
+    <a href="{% url 'my_bookings' %}">
+        View My Bookings
+    </a>
+
+    <br><br>
+
+    <a href="{% url 'hotel_list' %}">
+        Find another stay
+    </a>
+
+</main>
+
+</body>
+
+</html>
