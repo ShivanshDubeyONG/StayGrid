@@ -14,7 +14,7 @@
     background:
         radial-gradient(
             circle at 15% 20%,
-            rgba(232, 93, 63, 0.08),
+            rgba(233, 216, 166, 0.18),
             transparent 28%
         ),
         radial-gradient(
@@ -41,6 +41,7 @@
     background: var(--color-surface);
 
     border: 1px solid var(--color-border);
+
     border-radius: var(--radius-xl);
 
     box-shadow: var(--shadow-lg);
@@ -78,7 +79,7 @@
     right: -180px;
     bottom: -190px;
 
-    border: 1px solid rgba(255,255,255,0.12);
+    border: 1px solid rgba(255, 255, 255, 0.12);
 
     border-radius: 50%;
 }
@@ -94,7 +95,7 @@
     right: -85px;
     bottom: -115px;
 
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
 
     border-radius: 50%;
 }
@@ -108,6 +109,7 @@
 
 .auth-brand-mark {
     display: inline-flex;
+
     align-items: center;
     justify-content: center;
 
@@ -117,6 +119,7 @@
     margin-bottom: 80px;
 
     background: #fff;
+
     color: var(--color-dark);
 
     border-radius: 12px;
@@ -144,7 +147,7 @@
 
     margin: 0;
 
-    color: rgba(255,255,255,0.58);
+    color: rgba(255, 255, 255, 0.58);
 
     font-size: 0.78rem;
 
@@ -156,10 +159,12 @@
     z-index: 2;
 
     display: flex;
+
     align-items: center;
+
     gap: 10px;
 
-    color: rgba(255,255,255,0.4);
+    color: rgba(255, 255, 255, 0.4);
 
     font-size: 0.62rem;
 }
@@ -171,6 +176,7 @@
 
 .auth-form-panel {
     display: flex;
+
     align-items: center;
 
     padding: 55px;
@@ -178,6 +184,7 @@
 
 .auth-form-wrap {
     width: 100%;
+
     max-width: 420px;
 
     margin: 0 auto;
@@ -209,34 +216,168 @@
 
 
 /* =========================================================
-   FORM
+   AUTH FORM
    ========================================================= */
 
 .auth-form {
-    display: flex;
-    flex-direction: column;
-
-    gap: 15px;
+    width: 100%;
 }
+
+
+/* =========================================================
+   FORM GROUPS
+   ========================================================= */
 
 .auth-form .form-group {
-    gap: 7px;
+    display: flex;
+
+    flex-direction: column;
+
+    width: 100%;
+
+    gap: 8px;
+
+    margin-bottom: 18px;
 }
 
-.auth-form .form-control {
-    min-height: 49px;
+.auth-form .form-group label {
+    display: block;
 
+    color: var(--color-text);
+
+    font-size: 0.78rem;
+
+    font-weight: 600;
+
+    letter-spacing: 0.01em;
+}
+
+
+/* =========================================================
+   INPUTS
+   ========================================================= */
+
+.auth-form .form-group input,
+.auth-form input[type="text"],
+.auth-form input[type="password"],
+.auth-form input[type="email"] {
+    display: block;
+
+    width: 100%;
+
+    min-width: 0;
+
+    height: 56px;
+
+    box-sizing: border-box;
+
+    padding: 0 17px;
+
+    background: #f8f7f3;
+
+    color: var(--color-text);
+
+    border: 1px solid #deddd7;
+
+    border-radius: 12px;
+
+    outline: none;
+
+    font-family: var(--font-body);
+
+    font-size: 0.95rem;
+
+    transition:
+        border-color 180ms ease,
+        background 180ms ease,
+        box-shadow 180ms ease,
+        transform 180ms ease;
+}
+
+.auth-form .form-group input:hover,
+.auth-form input[type="text"]:hover,
+.auth-form input[type="password"]:hover,
+.auth-form input[type="email"]:hover {
+    background: #ffffff;
+
+    border-color: #c9c7c0;
+}
+
+.auth-form .form-group input:focus,
+.auth-form input[type="text"]:focus,
+.auth-form input[type="password"]:focus,
+.auth-form input[type="email"]:focus {
+    background: #ffffff;
+
+    border-color: var(--color-accent-deep);
+
+    box-shadow:
+        0 0 0 4px rgba(233, 216, 166, 0.28);
+}
+
+.auth-form input::placeholder {
+    color: #99958c;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   DJANGO AS_P FALLBACK
+   Handles forms rendered with {{ form.as_p }}
+   ========================================================= */
+
+.auth-form p {
+    width: 100%;
+
+    margin: 0 0 18px;
+}
+
+.auth-form p label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    color: var(--color-text);
+
+    font-size: 0.78rem;
+
+    font-weight: 600;
+}
+
+.auth-form p input {
+    display: block;
+
+    width: 100%;
+
+    height: 56px;
+
+    box-sizing: border-box;
+
+    padding: 0 17px;
+
+    background: #f8f7f3;
+
+    border: 1px solid #deddd7;
+
+    border-radius: 12px;
+
+    color: var(--color-text);
+
+    font-family: var(--font-body);
+
+    font-size: 0.95rem;
+
+    outline: none;
+}
+
+.auth-form p input:focus {
     background: #fff;
-}
 
-.auth-form .form-control::placeholder {
-    color: var(--color-text-muted);
-}
+    border-color: var(--color-accent-deep);
 
-.auth-form .btn {
-    min-height: 50px;
-
-    margin-top: 7px;
+    box-shadow:
+        0 0 0 4px rgba(233, 216, 166, 0.28);
 }
 
 
@@ -260,11 +401,12 @@
     font-weight: 700;
 
     text-decoration: underline;
+
     text-underline-offset: 3px;
 }
 
 .auth-switch a:hover {
-    color: var(--color-accent);
+    color: var(--color-accent-deep);
 }
 
 
@@ -278,6 +420,7 @@
 
 .auth-errors ul {
     display: flex;
+
     flex-direction: column;
 
     gap: 7px;
@@ -296,9 +439,11 @@
     color: #a12c2c;
 
     border: 1px solid rgba(180, 50, 50, 0.16);
+
     border-radius: 9px;
 
     font-size: 0.67rem;
+
     line-height: 1.5;
 }
 
@@ -327,7 +472,9 @@
     z-index: 2;
 
     display: flex;
+
     align-items: center;
+
     gap: 12px;
 
     margin-top: 35px;
@@ -346,7 +493,7 @@
 .auth-stat-label {
     max-width: 130px;
 
-    color: rgba(255,255,255,0.4);
+    color: rgba(255, 255, 255, 0.4);
 
     font-size: 0.6rem;
 
@@ -371,7 +518,6 @@
     .auth-brand-mark {
         margin-bottom: 50px;
     }
-
 }
 
 
@@ -404,5 +550,4 @@
     .auth-form-panel {
         padding: 35px 23px 40px;
     }
-
 }

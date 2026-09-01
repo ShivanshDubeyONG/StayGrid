@@ -88,9 +88,14 @@ def hotel_list(request):
         review_count=Count("reviews"),
     )
 
-    hotels = sorted(
-        hotels,
-        key=lambda hotel: stay_score(hotel),
+    # Calculate and attach Stay Score to every hotel
+    hotels = list(hotels)
+
+    for hotel in hotels:
+        hotel.stay_score = stay_score(hotel)
+
+    hotels.sort(
+        key=lambda hotel: hotel.stay_score,
         reverse=True,
     )
 
