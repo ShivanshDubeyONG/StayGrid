@@ -2,6 +2,20 @@
    STAYGRID — SEARCH EXPERIENCE
    Destination autocomplete + dates + guests
    ========================================================= */
+document.addEventListener("DOMContentLoaded", () => {
+
+    const input = document.getElementById("search-location");
+
+    const suggestions = document.getElementById(
+        "destination-suggestions"
+    );
+
+    if (!input || !suggestions) {
+        return;
+    }
+
+    // ... your autocomplete code
+});
 
 const STAYGRID_PLACES = [
     // INDIA — MAJOR CITIES

@@ -55,6 +55,10 @@ def hotel_list(request):
     max_price = request.GET.get("max_price", "").strip()
     rating = request.GET.get("rating", "").strip()
 
+    # --------------------------------------------------
+    # SEARCH
+    # --------------------------------------------------
+
     if q:
         hotels = hotels.filter(
             Q(name__icontains=q)
@@ -62,10 +66,15 @@ def hotel_list(request):
             | Q(description__icontains=q)
         )
 
+    # Destination search
     if location:
         hotels = hotels.filter(
             location__icontains=location
         )
+
+    # --------------------------------------------------
+    # PRICE
+    # --------------------------------------------------
 
     if min_price:
         hotels = hotels.filter(
@@ -77,18 +86,24 @@ def hotel_list(request):
             offer_price__lte=max_price
         )
 
+    # --------------------------------------------------
+    # RATING
+    # --------------------------------------------------
+
     if rating:
         hotels = hotels.filter(
             star_rating__gte=rating
         )
 
-    # Smart Stay Score
+    # --------------------------------------------------
+    # STAY SCORE
+    # --------------------------------------------------
+
     hotels = hotels.annotate(
         review_average=Avg("reviews__rating"),
         review_count=Count("reviews"),
     )
 
-    # Calculate and attach Stay Score to every hotel
     hotels = list(hotels)
 
     for hotel in hotels:
@@ -104,11 +119,18 @@ def hotel_list(request):
         "hotels/hotel_list.html",
         {
             "hotels": hotels,
+
+            # Search values
             "query": q,
             "location": location,
+
+            # Filters
             "min_price": min_price,
             "max_price": max_price,
             "rating": rating,
+
+            # Useful for the results page
+            "result_count": len(hotels),
         },
     )
 
