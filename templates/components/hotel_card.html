@@ -11,7 +11,7 @@
         {% with image=hotel.images.first %}
             {% if image %}
                 <img
-                    src="{{ image.image.url }}"
+                    src="{% static 'images/hotels/' %}{{ image.image.name|cut:'hotels/' }}"
                     alt="{{ hotel.name }}"
                     loading="lazy"
                 >
