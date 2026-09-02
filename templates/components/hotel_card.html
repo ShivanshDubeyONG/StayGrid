@@ -2,10 +2,8 @@
 
 <article class="hotel-card" data-reveal>
 
-    {% with hotel_url='?location='|add:request.GET.location|add:'&check_in='|add:request.GET.check_in|add:'&check_out='|add:request.GET.check_out|add:'&guests='|add:request.GET.guests %}
-
     <a
-        href="{% url 'hotel_detail' hotel.id %}{{ hotel_url }}"
+        href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
         class="hotel-card-image"
         aria-label="View {{ hotel.name }}"
     >
@@ -41,9 +39,13 @@
 
     <div class="hotel-card-content">
 
+        <!-- HOTEL NAME -->
+
         <h3 class="hotel-card-title">
 
-            <a href="{% url 'hotel_detail' hotel.id %}{{ hotel_url }}">
+            <a
+                href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
+            >
 
                 {{ hotel.name }}
 
@@ -51,6 +53,8 @@
 
         </h3>
 
+
+        <!-- LOCATION -->
 
         {% if hotel.location %}
 
@@ -60,6 +64,8 @@
 
         {% endif %}
 
+
+        <!-- STAY SCORE -->
 
         {% if hotel.stay_score %}
 
@@ -78,6 +84,8 @@
         {% endif %}
 
 
+        <!-- DESCRIPTION -->
+
         {% if hotel.description %}
 
             <p class="hotel-card-description">
@@ -86,6 +94,8 @@
 
         {% endif %}
 
+
+        <!-- BOTTOM -->
 
         <div class="hotel-card-bottom">
 
@@ -113,17 +123,20 @@
 
 
             <a
-                href="{% url 'hotel_detail' hotel.id %}{{ hotel_url }}"
+                href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
                 class="btn btn-secondary"
             >
+
                 View stay
-                <span>→</span>
+
+                <span>
+                    →
+                </span>
+
             </a>
 
         </div>
 
     </div>
-
-    {% endwith %}
 
 </article>
