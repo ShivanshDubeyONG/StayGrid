@@ -6,8 +6,7 @@ StayGrid is a full-stack hotel booking application designed to provide a clean, 
 
 The platform supports room-level inventory, guest reviews, dynamic Stay Scores, user authentication, hotel management, and PostgreSQL-backed booking data.
 
-🌐 **Live Demo:** https://staygrid-z1xq.onrender.com
-
+🌐 **[LIVE DEMO](https://staygrid-z1xq.onrender.com)**
 ---
 
 ## ✨ Features
