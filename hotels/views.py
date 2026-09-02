@@ -142,106 +142,80 @@ def stay_score(hotel):
     """
 
     # --------------------------------------------------
-    # STAR RATING
+    # STAR RATING — 40 POINTS
     # --------------------------------------------------
 
-    star_rating = float(
-        hotel.star_rating or 0
-    )
+    star_rating = float(hotel.star_rating or 0)
 
-    star_score = (
-        star_rating / 5
-    ) * 40
+    star_score = (star_rating / 5) * 40
 
 
     # --------------------------------------------------
-    # GUEST REVIEWS
+    # GUEST REVIEWS — 35 POINTS
     # --------------------------------------------------
 
     average_rating = getattr(
         hotel,
         "review_average",
-        None
+        None,
     )
 
     review_count = getattr(
         hotel,
         "review_count",
-        None
+        None,
     )
 
-
     if average_rating is None:
-
         review_data = hotel.reviews.aggregate(
             average=Avg("rating"),
             count=Count("id"),
         )
 
-        average_rating = (
-            review_data["average"] or 0
-        )
-
-        review_count = (
-            review_data["count"] or 0
-        )
+        average_rating = review_data["average"] or 0
+        review_count = review_data["count"] or 0
 
     else:
+        average_rating = float(average_rating or 0)
+        review_count = int(review_count or 0)
 
-        average_rating = float(
-            average_rating or 0
-        )
-
-        review_count = int(
-            review_count or 0
-        )
-
-
-    review_score = (
-        float(average_rating) / 5
-    ) * 35
+    review_score = (float(average_rating) / 5) * 35
 
 
     # --------------------------------------------------
-    # REVIEW COUNT
+    # REVIEW COUNT — 10 POINTS
     # --------------------------------------------------
 
-    review_count_score = min(
-        review_count,
-        10
-    )
+    review_count_score = min(review_count, 10)
 
 
     # --------------------------------------------------
-    # PRICE VALUE
+    # PRICE VALUE — 15 POINTS
     # --------------------------------------------------
 
-    average_hotel_price = (
+    prices = list(
         Hotel.objects
-        .filter(is_active=True)
-        .aggregate(
-            avg=Avg("offer_price")
-        )["avg"]
+        .filter(
+            is_active=True,
+            offer_price__gt=0,
+        )
+        .values_list("offer_price", flat=True)
     )
-
 
     price_score = 0
 
-    if (
-        average_hotel_price
-        and hotel.offer_price
-        and hotel.offer_price > 0
-    ):
+    if prices and hotel.offer_price:
+        min_price = float(min(prices))
+        max_price = float(max(prices))
+        hotel_price = float(hotel.offer_price)
 
-        price_ratio = (
-            float(average_hotel_price)
-            / float(hotel.offer_price)
-        )
-
-        price_score = min(
-            max(price_ratio * 15, 0),
-            15
-        )
+        if max_price > min_price:
+            price_score = (
+                (max_price - hotel_price)
+                / (max_price - min_price)
+            ) * 15
+        else:
+            price_score = 15
 
 
     # --------------------------------------------------
@@ -257,7 +231,7 @@ def stay_score(hotel):
 
     return round(
         min(score, 100),
-        1
+        1,
     )
 
 @login_required

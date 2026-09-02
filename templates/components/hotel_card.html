@@ -8,39 +8,30 @@
         aria-label="View {{ hotel.name }}"
     >
 
-        {% if hotel.image %}
-
-            <img
-                src="{{ hotel.image.url }}"
-                alt="{{ hotel.name }}"
-                loading="lazy"
-            >
-
-        {% else %}
-
-            <div class="hotel-card-image-placeholder"></div>
-
-        {% endif %}
+        {% with image=hotel.images.first %}
+            {% if image %}
+                <img
+                    src="{{ image.image.url }}"
+                    alt="{{ hotel.name }}"
+                    loading="lazy"
+                >
+            {% else %}
+                <div class="hotel-card-image-placeholder">
+                    StayGrid
+                </div>
+            {% endif %}
+        {% endwith %}
 
         <div class="hotel-card-overlay"></div>
+
+        <div class="hotel-image-rating">
+            ★ {{ hotel.star_rating|floatformat:0 }}
+        </div>
 
     </a>
 
 
     <div class="hotel-card-content">
-
-        <!-- HEADER: RATING ONLY -->
-        <div class="hotel-card-meta">
-
-            {% if hotel.star_rating %}
-                <span class="hotel-rating">
-                    <span>★</span>
-                    {{ hotel.star_rating }}
-                </span>
-            {% endif %}
-
-        </div>
-
 
         <!-- HOTEL NAME -->
         <h3 class="hotel-card-title">
@@ -80,39 +71,17 @@
 
             <div class="hotel-card-price">
 
-                {% if hotel.min_price %}
+                <span>From</span>
 
-                    <strong>
-                        ₹{{ hotel.min_price|floatformat:0 }}
-                    </strong>
+                <strong>
+                    ₹{% if hotel.offer_price %}
+                        {{ hotel.offer_price|floatformat:0 }}
+                    {% else %}
+                        {{ hotel.original_price|floatformat:0 }}
+                    {% endif %}
+                </strong>
 
-                    <span>
-                        per night
-                    </span>
-
-                {% elif hotel.rooms.all %}
-
-                    <strong>
-                        <div class="hotel-card-price">
-                            <span>From</span>
-                            <strong>
-                                ₹{% if hotel.offer_price %}{{ hotel.offer_price|floatformat:0 }}{% else %}{{ hotel.original_price|floatformat:0 }}{% endif %}
-                            </strong>
-                            <small>/ night</small>
-                        </div>
-                    </strong>
-
-                    <span>
-                        per night
-                    </span>
-
-                {% else %}
-
-                    <strong>
-                        View stay
-                    </strong>
-
-                {% endif %}
+                <small>/ night</small>
 
             </div>
 
