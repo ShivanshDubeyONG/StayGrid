@@ -9,6 +9,17 @@ The platform supports room-level inventory, guest reviews, dynamic Stay Scores, 
 🌐 **[LIVE DEMO](https://staygrid-z1xq.onrender.com)**
 ---
 
+<img width="1482" height="967" alt="image" src="https://github.com/user-attachments/assets/3e50d56e-740f-4e9c-83f0-dca34578464f" />
+
+<img width="1492" height="967" alt="image" src="https://github.com/user-attachments/assets/9e97369b-9195-4094-b4e3-f9c497f3c2b5" />
+
+<img width="1567" height="926" alt="image" src="https://github.com/user-attachments/assets/096c1610-85d6-42a7-8f49-a2bc0a6d1dcf" />
+
+<img width="1497" height="966" alt="image" src="https://github.com/user-attachments/assets/ba2c572d-3aa0-4f30-98e1-c498839fe6cd" />
+
+<img width="1492" height="972" alt="image" src="https://github.com/user-attachments/assets/bfb55e94-0aed-4c1e-a3d3-05f193df39d8" />
+
+
 ## ✨ Features
 
 ### 🏨 Hotel Discovery
