@@ -2,24 +2,32 @@
 
 <article class="hotel-card" data-reveal>
 
+    {% with hotel_url='?location='|add:request.GET.location|add:'&check_in='|add:request.GET.check_in|add:'&check_out='|add:request.GET.check_out|add:'&guests='|add:request.GET.guests %}
+
     <a
-        href="{% url 'hotel_detail' hotel.id %}"
+        href="{% url 'hotel_detail' hotel.id %}{{ hotel_url }}"
         class="hotel-card-image"
         aria-label="View {{ hotel.name }}"
     >
 
         {% with image=hotel.images.first %}
+
             {% if image %}
+
                 <img
                     src="{% static 'images/hotels/' %}{{ image.image.name|cut:'hotels/' }}"
                     alt="{{ hotel.name }}"
                     loading="lazy"
                 >
+
             {% else %}
+
                 <div class="hotel-card-image-placeholder">
                     StayGrid
                 </div>
+
             {% endif %}
+
         {% endwith %}
 
         <div class="hotel-card-overlay"></div>
@@ -33,61 +41,79 @@
 
     <div class="hotel-card-content">
 
-        <!-- HOTEL NAME -->
         <h3 class="hotel-card-title">
-            <a href="{% url 'hotel_detail' hotel.id %}">
+
+            <a href="{% url 'hotel_detail' hotel.id %}{{ hotel_url }}">
+
                 {{ hotel.name }}
+
             </a>
+
         </h3>
 
 
-        <!-- LOCATION -->
         {% if hotel.location %}
+
             <p class="hotel-card-location">
                 {{ hotel.location }}
             </p>
+
         {% endif %}
 
 
-        <!-- STAY SCORE -->
         {% if hotel.stay_score %}
+
             <div class="hotel-stay-score">
-                <span>Stay Score</span>
-                <strong>{{ hotel.stay_score|floatformat:0 }}</strong>
+
+                <span>
+                    Stay Score
+                </span>
+
+                <strong>
+                    {{ hotel.stay_score|floatformat:0 }}
+                </strong>
+
             </div>
+
         {% endif %}
 
 
-        <!-- DESCRIPTION -->
         {% if hotel.description %}
+
             <p class="hotel-card-description">
                 {{ hotel.description }}
             </p>
+
         {% endif %}
 
 
-        <!-- BOTTOM -->
         <div class="hotel-card-bottom">
 
             <div class="hotel-card-price">
 
-                <span>From</span>
+                <span>
+                    From
+                </span>
 
                 <strong>
+
                     ₹{% if hotel.offer_price %}
                         {{ hotel.offer_price|floatformat:0 }}
                     {% else %}
                         {{ hotel.original_price|floatformat:0 }}
                     {% endif %}
+
                 </strong>
 
-                <small>/ night</small>
+                <small>
+                    / night
+                </small>
 
             </div>
 
 
             <a
-                href="{% url 'hotel_detail' hotel.id %}"
+                href="{% url 'hotel_detail' hotel.id %}{{ hotel_url }}"
                 class="btn btn-secondary"
             >
                 View stay
@@ -97,5 +123,7 @@
         </div>
 
     </div>
+
+    {% endwith %}
 
 </article>
