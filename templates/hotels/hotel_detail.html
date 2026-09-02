@@ -45,8 +45,12 @@
                         </span>
 
                         <strong>
-                            {{ average_rating|floatformat:1 }}
+                            {{ hotel.star_rating|floatformat:0 }}
                         </strong>
+
+                        <span class="rating-label">
+                            star hotel
+                        </span>
 
                     </div>
 

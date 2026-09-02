@@ -1,16 +1,19 @@
 <form
     method="get"
     action="{% url 'hotel_list' %}"
-    class="search-bar"
+    class="search-panel"
     data-search-form
 >
 
-    <!-- DESTINATION -->
+    <!-- WHERE -->
 
-    <div class="search-field search-destination">
-        <span class="search-field-icon">⌖</span>
+    <div class="search-field">
 
-        <div class="search-field-content">
+        <span class="search-icon">
+            ⌖
+        </span>
+
+        <div>
             <label for="search-location">
                 Where
             </label>
@@ -30,15 +33,22 @@
                 class="destination-suggestions"
             ></div>
         </div>
+
     </div>
+
+
+    <div class="search-divider"></div>
 
 
     <!-- CHECK IN -->
 
     <div class="search-field">
-        <span class="search-field-icon">◷</span>
 
-        <div class="search-field-content">
+        <span class="search-icon">
+            ◷
+        </span>
+
+        <div>
             <label for="search-check-in">
                 Check in
             </label>
@@ -51,15 +61,22 @@
                 required
             >
         </div>
+
     </div>
+
+
+    <div class="search-divider"></div>
 
 
     <!-- CHECK OUT -->
 
     <div class="search-field">
-        <span class="search-field-icon">◷</span>
 
-        <div class="search-field-content">
+        <span class="search-icon">
+            ◷
+        </span>
+
+        <div>
             <label for="search-check-out">
                 Check out
             </label>
@@ -72,15 +89,22 @@
                 required
             >
         </div>
+
     </div>
+
+
+    <div class="search-divider"></div>
 
 
     <!-- GUESTS -->
 
-    <div class="search-field search-guests">
-        <span class="search-field-icon">◉</span>
+    <div class="search-field">
 
-        <div class="search-field-content">
+        <span class="search-icon">
+            ◉
+        </span>
+
+        <div>
             <label for="search-guests">
                 Guests
             </label>
@@ -96,18 +120,18 @@
                 required
             >
         </div>
+
     </div>
 
 
-    <!-- SEARCH -->
+    <!-- SEARCH BUTTON -->
 
     <button
         type="submit"
         class="search-submit"
-        data-search-submit
+        aria-label="Search stays"
     >
-        Search stays
-        <span>→</span>
+        →
     </button>
 
 </form>
@@ -125,11 +149,11 @@
     const checkOut = document.querySelector("#search-check-out");
     const guests = document.querySelector("#search-guests");
 
-    /*
-     * TODAY
-     */
+
+    /* TODAY */
 
     const today = new Date();
+
     const todayString =
         today.getFullYear() +
         "-" +
@@ -141,9 +165,7 @@
     checkOut.min = todayString;
 
 
-    /*
-     * CHECK-IN CHANGES
-     */
+    /* CHECK-IN → CHECK-OUT */
 
     checkIn.addEventListener("change", function () {
 
@@ -153,7 +175,10 @@
             return;
         }
 
-        const nextDay = new Date(checkIn.value + "T00:00:00");
+        const nextDay = new Date(
+            checkIn.value + "T00:00:00"
+        );
+
         nextDay.setDate(nextDay.getDate() + 1);
 
         const nextDayString =
@@ -165,19 +190,17 @@
 
         checkOut.min = nextDayString;
 
-        /*
-         * If current checkout is now invalid,
-         * clear it so the user has to choose again.
-         */
-        if (checkOut.value && checkOut.value <= checkIn.value) {
+        if (
+            checkOut.value &&
+            checkOut.value <= checkIn.value
+        ) {
             checkOut.value = "";
         }
+
     });
 
 
-    /*
-     * FORM VALIDATION
-     */
+    /* VALIDATION */
 
     form.addEventListener("submit", function (event) {
 
@@ -208,10 +231,17 @@
             return;
         }
 
-        if (!guests.value || Number(guests.value) < 1) {
+        const guestCount = Number(guests.value);
+
+        if (
+            !guests.value ||
+            guestCount < 1 ||
+            guestCount > 20
+        ) {
             event.preventDefault();
 
-            guests.value = 1;
+            alert("Please select between 1 and 20 guests.");
+
             guests.focus();
             return;
         }

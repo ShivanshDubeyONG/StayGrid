@@ -198,14 +198,18 @@
         color: var(--color-text-secondary);
     }
 
-    /* HOTEL CARD */
+    /* HOTEL GRID */
 
     .hotel-grid {
         display: grid;
-        gap: 16px;
+        gap: 20px;
     }
 
+    /* HOTEL CARD */
+
     .hotel-card {
+        display: grid;
+        grid-template-columns: 300px minmax(0, 1fr);
         background: var(--color-surface);
         border: 1px solid var(--color-border);
         border-radius: 18px;
@@ -222,8 +226,78 @@
         box-shadow: 0 14px 35px rgba(23, 23, 23, 0.07);
     }
 
+    /* HOTEL IMAGE */
+
+    .hotel-card-image {
+        position: relative;
+        min-height: 300px;
+        background: var(--color-surface-soft);
+        overflow: hidden;
+    }
+
+    .hotel-card-image img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        transition: transform 0.55s ease;
+    }
+
+    .hotel-card:hover .hotel-card-image img {
+        transform: scale(1.035);
+    }
+
+    .hotel-card-image-placeholder {
+        width: 100%;
+        height: 100%;
+        min-height: 300px;
+        display: grid;
+        place-items: center;
+        background:
+            linear-gradient(
+                135deg,
+                var(--color-surface-soft),
+                var(--color-bg)
+            );
+        color: var(--color-text-muted);
+        font-size: 13px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+    }
+
+    .hotel-image-overlay {
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            to bottom,
+            rgba(0, 0, 0, 0.08),
+            transparent 35%,
+            rgba(0, 0, 0, 0.12)
+        );
+        pointer-events: none;
+    }
+
+    .hotel-image-rating {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 2;
+        background: var(--color-dark);
+        color: white;
+        border-radius: 8px;
+        padding: 7px 10px;
+        font-size: 12px;
+        font-weight: 700;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.16);
+    }
+
+    /* CARD BODY */
+
     .hotel-card-body {
+        min-width: 0;
         padding: 24px;
+        display: flex;
+        flex-direction: column;
     }
 
     .hotel-card-top {
@@ -239,16 +313,6 @@
         color: var(--color-text-muted);
         text-transform: uppercase;
         letter-spacing: 0.08em;
-        font-weight: 700;
-    }
-
-    .hotel-rating-badge {
-        flex-shrink: 0;
-        background: var(--color-dark);
-        color: white;
-        border-radius: 7px;
-        padding: 6px 9px;
-        font-size: 12px;
         font-weight: 700;
     }
 
@@ -315,6 +379,7 @@
         gap: 20px;
         padding-top: 18px;
         border-top: 1px solid var(--color-border-light);
+        margin-top: auto;
     }
 
     .hotel-card-price {
@@ -410,6 +475,34 @@
         .hotel-filters {
             position: static;
         }
+
+        .hotel-card {
+            grid-template-columns: 240px minmax(0, 1fr);
+        }
+
+        .hotel-card-image {
+            min-height: 280px;
+        }
+
+        .hotel-card-image-placeholder {
+            min-height: 280px;
+        }
+    }
+
+    @media (max-width: 700px) {
+        .hotel-card {
+            grid-template-columns: 1fr;
+        }
+
+        .hotel-card-image {
+            height: 230px;
+            min-height: 230px;
+        }
+
+        .hotel-card-image-placeholder {
+            height: 230px;
+            min-height: 230px;
+        }
     }
 
     @media (max-width: 600px) {
@@ -449,7 +542,10 @@
     <div class="container">
 
         <header class="hotel-list-header">
-            <div class="hotel-list-eyebrow">StayGrid / Stays</div>
+
+            <div class="hotel-list-eyebrow">
+                StayGrid / Stays
+            </div>
 
             <h1>
                 {% if request.GET.location %}
@@ -462,6 +558,7 @@
             <p>
                 Curated stays ranked by comfort, value, and guest experience.
             </p>
+
         </header>
 
         <div class="hotel-results-layout">
@@ -501,7 +598,11 @@
                     {% endif %}
 
                     <div class="filter-group">
-                        <label class="filter-label" for="location">
+
+                        <label
+                            class="filter-label"
+                            for="location"
+                        >
                             Destination
                         </label>
 
@@ -513,14 +614,17 @@
                             value="{{ request.GET.location }}"
                             placeholder="Bengaluru"
                         >
+
                     </div>
 
                     <div class="filter-group">
+
                         <label class="filter-label">
                             Price / night
                         </label>
 
                         <div class="price-row">
+
                             <input
                                 class="filter-input"
                                 type="number"
@@ -538,10 +642,13 @@
                                 placeholder="Max"
                                 min="0"
                             >
+
                         </div>
+
                     </div>
 
                     <div class="filter-group">
+
                         <label class="filter-label">
                             Hotel rating
                         </label>
@@ -577,9 +684,13 @@
                             </a>
 
                         </div>
+
                     </div>
 
-                    <button type="submit" class="filter-button">
+                    <button
+                        type="submit"
+                        class="filter-button"
+                    >
                         Apply filters
                     </button>
 
@@ -607,7 +718,8 @@
 
                         {% if request.GET.guests %}
                             <span class="context-pill">
-                                {{ request.GET.guests }} guest{{ request.GET.guests|pluralize }}
+                                {{ request.GET.guests }}
+                                guest{{ request.GET.guests|pluralize }}
                             </span>
                         {% endif %}
 
@@ -623,16 +735,44 @@
 
                             <article class="hotel-card">
 
+                                <!-- HOTEL IMAGE -->
+                                <div class="hotel-card-image">
+
+                                    {% with image=hotel.images.first %}
+
+                                        {% if image %}
+
+                                            <img
+                                                src="{{ image.image.url }}"
+                                                alt="{{ hotel.name }}"
+                                                loading="lazy"
+                                            >
+
+                                            <div class="hotel-image-overlay"></div>
+
+                                        {% else %}
+
+                                            <div class="hotel-card-image-placeholder">
+                                                StayGrid
+                                            </div>
+
+                                        {% endif %}
+
+                                    {% endwith %}
+
+                                    <div class="hotel-image-rating">
+                                        ★ {{ hotel.star_rating|floatformat:0 }}
+                                    </div>
+
+                                </div>
+
+                                <!-- HOTEL CONTENT -->
                                 <div class="hotel-card-body">
 
                                     <div class="hotel-card-top">
 
                                         <div class="hotel-card-location">
                                             {{ hotel.location }}
-                                        </div>
-
-                                        <div class="hotel-rating-badge">
-                                            ★ {{ hotel.star_rating|floatformat:0 }}
                                         </div>
 
                                     </div>
@@ -642,42 +782,62 @@
                                     </h3>
 
                                     {% if hotel.description %}
+
                                         <p class="hotel-card-description">
                                             {{ hotel.description|truncatewords:24 }}
                                         </p>
+
                                     {% endif %}
 
                                     <div class="hotel-card-meta">
 
                                         <span class="hotel-meta-pill">
+
                                             {% if hotel.review_count %}
+
                                                 ★ {{ hotel.review_average|floatformat:1 }}
                                                 · {{ hotel.review_count }}
                                                 review{{ hotel.review_count|pluralize }}
+
                                             {% else %}
+
                                                 ★ {{ hotel.star_rating|floatformat:1 }}
                                                 · New stay
+
                                             {% endif %}
+
                                         </span>
 
                                         {% if hotel.rooms.count %}
+
                                             <span class="hotel-meta-pill">
-                                                {{ hotel.rooms.count }} room{{ hotel.rooms.count|pluralize }}
+                                                {{ hotel.rooms.count }}
+                                                room{{ hotel.rooms.count|pluralize }}
                                             </span>
+
                                         {% endif %}
 
                                     </div>
 
                                     <div class="hotel-card-score">
+
                                         <span class="hotel-score-dot"></span>
+
                                         Stay Score ·
-                                        <strong>{{ hotel.stay_score }}</strong>
+
+                                        <strong>
+                                            {{ hotel.stay_score }}
+                                        </strong>
+
                                     </div>
 
                                     <div class="hotel-card-footer">
 
                                         <div class="hotel-card-price">
-                                            <span>From</span>
+
+                                            <span>
+                                                From
+                                            </span>
 
                                             <strong>
                                                 ₹{{ hotel.offer_price|floatformat:0 }}
@@ -686,6 +846,7 @@
                                             <small>
                                                 / night
                                             </small>
+
                                         </div>
 
                                         <a

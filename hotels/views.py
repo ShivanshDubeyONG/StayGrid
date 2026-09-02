@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import datetime
 from decimal import Decimal
 from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
@@ -65,10 +65,6 @@ def hotel_list(request):
         messages.error(request, "Please select valid dates.")
         return redirect("home")
 
-    if check_in_date < timezone.localdate():
-        messages.error(request, "Check-in cannot be in the past.")
-        return redirect("home")
-
     if check_out_date <= check_in_date:
         messages.error(request, "Check-out must be after check-in.")
         return redirect("home")
@@ -88,8 +84,9 @@ def hotel_list(request):
     if not location or not check_in or not check_out or not guests:
         return redirect("home")
 
-    hotels = Hotel.objects.filter(is_active=True)
-
+    hotels = Hotel.objects.filter(
+        is_active=True
+    ).prefetch_related("images")
     if location:
         hotels = hotels.filter(location__icontains=location)
 
@@ -586,27 +583,26 @@ def booking_success(request, booking_id):
     )
 
 
-@login_required
 def my_bookings(request):
+    bookings = Booking.objects.filter(
+        user=request.user
+    ).select_related(
+        "room",
+        "room__hotel",
+    ).order_by("-created_at")
 
-    bookings = (
-        Booking.objects
-        .filter(user=request.user)
-        .select_related(
-            "room",
-            "room__hotel",
-        )
-        .order_by("-created_at")
-    )
+    active_bookings_count = bookings.exclude(
+        status="CANCELLED"
+    ).count()
 
     return render(
         request,
         "hotels/my_bookings.html",
         {
             "bookings": bookings,
+            "active_bookings_count": active_bookings_count,
         },
     )
-
 
 @login_required
 def cancel_booking(request, booking_id):
