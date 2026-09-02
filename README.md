@@ -1,12 +1,14 @@
 # StayGrid
 
+🌐 **[LIVE DEMO](https://staygrid-z1xq.onrender.com)**
+
+
 ### A modern hotel discovery and booking platform built with Django and PostgreSQL.
 
 StayGrid is a full-stack hotel booking application designed to provide a clean, premium experience for discovering hotels, comparing stays, checking room availability, and making bookings.
 
 The platform supports room-level inventory, guest reviews, dynamic Stay Scores, user authentication, hotel management, and PostgreSQL-backed booking data.
 
-🌐 **[LIVE DEMO](https://staygrid-z1xq.onrender.com)**
 ---
 
 
