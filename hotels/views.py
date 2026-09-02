@@ -1,5 +1,5 @@
 from decimal import Decimal
-
+from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
@@ -175,46 +175,37 @@ def stay_score(hotel):
     )
 
 
+@login_required
 def hotel_detail(request, hotel_id):
-
     hotel = get_object_or_404(
-        Hotel.objects
-        .prefetch_related(
-            "images",
-            "rooms",
-            "reviews__user",
-        )
-        .annotate(
-            review_average=Avg("reviews__rating"),
-            review_count=Count("reviews"),
-        ),
-        id=hotel_id,
+        Hotel.objects.prefetch_related("rooms", "reviews"),
+        pk=hotel_id,
         is_active=True,
     )
 
-    reviews = hotel.reviews.all().order_by(
-        "-created_at"
+    rooms = (
+        hotel.rooms
+        .filter(is_active=True)
+        .order_by("room_type", "price_per_night")
     )
 
+    reviews = hotel.reviews.all().order_by("-created_at")
+
     average_rating = reviews.aggregate(
-        average=Avg("rating")
-    )["average"]
+        avg=Avg("rating")
+    )["avg"] or 0
 
     return render(
         request,
         "hotels/hotel_detail.html",
         {
             "hotel": hotel,
+            "rooms": rooms,
             "reviews": reviews,
             "average_rating": average_rating,
             "stay_score": stay_score(hotel),
         },
     )
-
-
-# ==========================================================
-# BOOKING ENGINE
-# ==========================================================
 
 @login_required
 def book_room(request, room_id):
