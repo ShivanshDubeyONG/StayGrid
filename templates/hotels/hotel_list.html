@@ -1,399 +1,736 @@
 {% extends "base.html" %}
-{% load static %}
 
-{% block title %}Explore Stays — StayGrid{% endblock %}
+{% block title %}Find your stay · StayGrid{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/hotels.css' %}">
+<style>
+    .hotel-list-page {
+        padding: 52px 0 80px;
+    }
+
+    .hotel-list-header {
+        margin-bottom: 34px;
+    }
+
+    .hotel-list-eyebrow {
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+        margin-bottom: 10px;
+    }
+
+    .hotel-list-header h1 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(36px, 5vw, 56px);
+        line-height: 1;
+        letter-spacing: -0.035em;
+        color: var(--color-text);
+    }
+
+    .hotel-list-header p {
+        margin: 14px 0 0;
+        color: var(--color-text-secondary);
+        font-size: 15px;
+    }
+
+    .hotel-results-layout {
+        display: grid;
+        grid-template-columns: 250px minmax(0, 1fr);
+        gap: 32px;
+        align-items: start;
+    }
+
+    /* FILTERS */
+
+    .hotel-filters {
+        position: sticky;
+        top: 92px;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 18px;
+        padding: 22px;
+    }
+
+    .filter-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+    }
+
+    .filter-heading strong {
+        font-size: 15px;
+    }
+
+    .filter-heading span {
+        width: 28px;
+        height: 28px;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        background: var(--color-accent-soft);
+        font-size: 13px;
+    }
+
+    .filter-group {
+        padding: 18px 0;
+        border-top: 1px solid var(--color-border-light);
+    }
+
+    .filter-group:first-of-type {
+        border-top: 0;
+        padding-top: 0;
+    }
+
+    .filter-label {
+        display: block;
+        margin-bottom: 10px;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text-secondary);
+    }
+
+    .filter-input {
+        width: 100%;
+        box-sizing: border-box;
+        border: 1px solid var(--color-border);
+        background: var(--color-bg);
+        border-radius: 10px;
+        padding: 11px 12px;
+        font: inherit;
+        font-size: 14px;
+        color: var(--color-text);
+        outline: none;
+    }
+
+    .filter-input:focus {
+        border-color: var(--color-accent-deep);
+    }
+
+    .price-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+
+    .rating-options {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .rating-option {
+        text-decoration: none;
+        color: var(--color-text);
+        border: 1px solid var(--color-border);
+        border-radius: 9px;
+        padding: 8px 10px;
+        font-size: 13px;
+        background: var(--color-bg);
+        transition: 0.2s ease;
+    }
+
+    .rating-option:hover,
+    .rating-option.active {
+        background: var(--color-dark);
+        border-color: var(--color-dark);
+        color: white;
+    }
+
+    .filter-button {
+        width: 100%;
+        border: 0;
+        border-radius: 11px;
+        padding: 12px 16px;
+        background: var(--color-dark);
+        color: white;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-top: 4px;
+    }
+
+    .filter-button:hover {
+        opacity: 0.9;
+    }
+
+    /* RESULTS */
+
+    .hotel-results {
+        min-width: 0;
+    }
+
+    .results-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 18px;
+        gap: 15px;
+    }
+
+    .results-count {
+        font-size: 14px;
+        color: var(--color-text-secondary);
+    }
+
+    .results-count strong {
+        color: var(--color-text);
+    }
+
+    .search-context {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+    }
+
+    .context-pill {
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        border-radius: 999px;
+        padding: 7px 11px;
+        font-size: 12px;
+        color: var(--color-text-secondary);
+    }
+
+    /* HOTEL CARD */
+
+    .hotel-grid {
+        display: grid;
+        gap: 16px;
+    }
+
+    .hotel-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 18px;
+        overflow: hidden;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease,
+            border-color 0.2s ease;
+    }
+
+    .hotel-card:hover {
+        transform: translateY(-2px);
+        border-color: var(--color-accent-deep);
+        box-shadow: 0 14px 35px rgba(23, 23, 23, 0.07);
+    }
+
+    .hotel-card-body {
+        padding: 24px;
+    }
+
+    .hotel-card-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 12px;
+    }
+
+    .hotel-card-location {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+    }
+
+    .hotel-rating-badge {
+        flex-shrink: 0;
+        background: var(--color-dark);
+        color: white;
+        border-radius: 7px;
+        padding: 6px 9px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .hotel-card h3 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 27px;
+        line-height: 1.15;
+        letter-spacing: -0.025em;
+        color: var(--color-text);
+    }
+
+    .hotel-card-description {
+        margin: 10px 0 18px;
+        max-width: 700px;
+        color: var(--color-text-secondary);
+        font-size: 14px;
+        line-height: 1.65;
+    }
+
+    .hotel-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 22px;
+    }
+
+    .hotel-meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        background: var(--color-accent-soft);
+        border-radius: 999px;
+        padding: 7px 10px;
+        font-size: 12px;
+        color: var(--color-text);
+    }
+
+    .hotel-card-score {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        margin-bottom: 22px;
+        font-size: 13px;
+        color: var(--color-text-secondary);
+    }
+
+    .hotel-card-score strong {
+        color: var(--color-text);
+        font-size: 15px;
+    }
+
+    .hotel-score-dot {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--color-accent-deep);
+    }
+
+    .hotel-card-footer {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 20px;
+        padding-top: 18px;
+        border-top: 1px solid var(--color-border-light);
+    }
+
+    .hotel-card-price {
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+        flex-wrap: wrap;
+    }
+
+    .hotel-card-price span {
+        width: 100%;
+        font-size: 11px;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        margin-bottom: -1px;
+    }
+
+    .hotel-card-price strong {
+        font-size: 22px;
+        color: var(--color-text);
+    }
+
+    .hotel-card-price small {
+        font-size: 12px;
+        color: var(--color-text-muted);
+    }
+
+    .hotel-card-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        text-decoration: none;
+        background: var(--color-dark);
+        color: white;
+        border-radius: 10px;
+        padding: 11px 17px;
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        transition: 0.2s ease;
+    }
+
+    .hotel-card-button:hover {
+        background: var(--color-dark-soft);
+        transform: translateX(2px);
+    }
+
+    /* EMPTY */
+
+    .hotel-empty {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 18px;
+        padding: 70px 30px;
+        text-align: center;
+    }
+
+    .hotel-empty-icon {
+        width: 52px;
+        height: 52px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: var(--color-accent-soft);
+        display: grid;
+        place-items: center;
+        font-size: 20px;
+    }
+
+    .hotel-empty h3 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 27px;
+    }
+
+    .hotel-empty p {
+        margin: 9px auto 0;
+        max-width: 420px;
+        color: var(--color-text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 900px) {
+        .hotel-results-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .hotel-filters {
+            position: static;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .hotel-list-page {
+            padding: 35px 0 55px;
+        }
+
+        .hotel-card-body {
+            padding: 19px;
+        }
+
+        .hotel-card h3 {
+            font-size: 23px;
+        }
+
+        .hotel-card-footer {
+            align-items: stretch;
+            flex-direction: column;
+        }
+
+        .hotel-card-button {
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .results-toolbar {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<section class="hotels-page">
-
+<main class="hotel-list-page">
     <div class="container">
 
-        <!-- =================================================
-             PAGE HEADER
-             ================================================= -->
+        <header class="hotel-list-header">
+            <div class="hotel-list-eyebrow">StayGrid / Stays</div>
 
-        <header class="hotels-header" data-reveal>
-
-            <div>
-
-                <span class="section-eyebrow">
-                    STAYGRID EXPLORE
-                </span>
-
-                <h1>
+            <h1>
+                {% if request.GET.location %}
+                    Stays in {{ request.GET.location }}
+                {% else %}
                     Find your stay.
-                </h1>
+                {% endif %}
+            </h1>
 
-                <p>
-                    Compare properties by price,
-                    location, rating and Stay Score.
-                </p>
-
-            </div>
-
-            <div class="hotels-result-count">
-
-                <strong>
-                    {{ hotels|length }}
-                </strong>
-
-                <span>
-                    stays
-                </span>
-
-            </div>
-
+            <p>
+                Curated stays ranked by comfort, value, and guest experience.
+            </p>
         </header>
 
+        <div class="hotel-results-layout">
 
-        <!-- =================================================
-             SEARCH
-             ================================================= -->
+            <!-- FILTERS -->
+            <aside class="hotel-filters">
 
-        <div
-            class="hotels-search"
-            data-reveal
-            data-reveal-delay="80"
-        >
+                <div class="filter-heading">
+                    <strong>Filter stays</strong>
+                    <span>⌕</span>
+                </div>
 
-            {% include "components/search_bar.html" %}
+                <form method="get">
 
-        </div>
-
-
-        <!-- =================================================
-             RESULTS TOOLBAR
-             ================================================= -->
-
-        <div
-            class="hotels-toolbar"
-            data-reveal
-            data-reveal-delay="120"
-        >
-
-            <div class="hotels-toolbar-copy">
-
-                <span class="section-eyebrow">
-                    RESULTS
-                </span>
-
-                <strong>
-                    {% if request.GET.location %}
-                        Stays in {{ request.GET.location }}
-                    {% else %}
-                        All available stays
+                    {% if request.GET.check_in %}
+                        <input
+                            type="hidden"
+                            name="check_in"
+                            value="{{ request.GET.check_in }}"
+                        >
                     {% endif %}
-                </strong>
 
-            </div>
+                    {% if request.GET.check_out %}
+                        <input
+                            type="hidden"
+                            name="check_out"
+                            value="{{ request.GET.check_out }}"
+                        >
+                    {% endif %}
 
+                    {% if request.GET.guests %}
+                        <input
+                            type="hidden"
+                            name="guests"
+                            value="{{ request.GET.guests }}"
+                        >
+                    {% endif %}
 
-            <form
-                method="GET"
-                class="sort-form"
-            >
+                    <div class="filter-group">
+                        <label class="filter-label" for="location">
+                            Destination
+                        </label>
 
-                {% if request.GET.location %}
-                    <input
-                        type="hidden"
-                        name="location"
-                        value="{{ request.GET.location }}"
-                    >
-                {% endif %}
+                        <input
+                            class="filter-input"
+                            id="location"
+                            type="text"
+                            name="location"
+                            value="{{ request.GET.location }}"
+                            placeholder="Bengaluru"
+                        >
+                    </div>
 
-                {% if request.GET.q %}
-                    <input
-                        type="hidden"
-                        name="q"
-                        value="{{ request.GET.q }}"
-                    >
-                {% endif %}
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            Price / night
+                        </label>
 
-                {% if request.GET.min_price %}
-                    <input
-                        type="hidden"
-                        name="min_price"
-                        value="{{ request.GET.min_price }}"
-                    >
-                {% endif %}
+                        <div class="price-row">
+                            <input
+                                class="filter-input"
+                                type="number"
+                                name="min_price"
+                                value="{{ request.GET.min_price }}"
+                                placeholder="Min"
+                                min="0"
+                            >
 
-                {% if request.GET.max_price %}
-                    <input
-                        type="hidden"
-                        name="max_price"
-                        value="{{ request.GET.max_price }}"
-                    >
-                {% endif %}
+                            <input
+                                class="filter-input"
+                                type="number"
+                                name="max_price"
+                                value="{{ request.GET.max_price }}"
+                                placeholder="Max"
+                                min="0"
+                            >
+                        </div>
+                    </div>
 
-                {% if request.GET.rating %}
-                    <input
-                        type="hidden"
-                        name="rating"
-                        value="{{ request.GET.rating }}"
-                    >
-                {% endif %}
+                    <div class="filter-group">
+                        <label class="filter-label">
+                            Hotel rating
+                        </label>
 
+                        <div class="rating-options">
 
-                <label for="sort">
-                    SORT
-                </label>
+                            <a
+                                href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}"
+                                class="rating-option {% if not request.GET.rating %}active{% endif %}"
+                            >
+                                All
+                            </a>
 
-                <select
-                    id="sort"
-                    name="sort"
-                    onchange="this.form.submit()"
-                >
+                            <a
+                                href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}&rating=5"
+                                class="rating-option {% if request.GET.rating == '5' %}active{% endif %}"
+                            >
+                                ★ 5
+                            </a>
 
-                    <option value="score"
-                        {% if request.GET.sort == "score" or not request.GET.sort %}
-                            selected
+                            <a
+                                href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}&rating=4"
+                                class="rating-option {% if request.GET.rating == '4' %}active{% endif %}"
+                            >
+                                ★ 4+
+                            </a>
+
+                            <a
+                                href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}&rating=3"
+                                class="rating-option {% if request.GET.rating == '3' %}active{% endif %}"
+                            >
+                                ★ 3+
+                            </a>
+
+                        </div>
+                    </div>
+
+                    <button type="submit" class="filter-button">
+                        Apply filters
+                    </button>
+
+                </form>
+
+            </aside>
+
+            <!-- RESULTS -->
+            <section class="hotel-results">
+
+                <div class="results-toolbar">
+
+                    <div class="results-count">
+                        <strong>{{ hotels|length }}</strong>
+                        stay{{ hotels|length|pluralize }} found
+                    </div>
+
+                    <div class="search-context">
+
+                        {% if request.GET.check_in and request.GET.check_out %}
+                            <span class="context-pill">
+                                {{ request.GET.check_in }} → {{ request.GET.check_out }}
+                            </span>
                         {% endif %}
-                    >
-                        Stay Score
-                    </option>
 
-                    <option value="price_low"
-                        {% if request.GET.sort == "price_low" %}
-                            selected
+                        {% if request.GET.guests %}
+                            <span class="context-pill">
+                                {{ request.GET.guests }} guest{{ request.GET.guests|pluralize }}
+                            </span>
                         {% endif %}
-                    >
-                        Price: Low to High
-                    </option>
-
-                    <option value="price_high"
-                        {% if request.GET.sort == "price_high" %}
-                            selected
-                        {% endif %}
-                    >
-                        Price: High to Low
-                    </option>
-
-                    <option value="rating"
-                        {% if request.GET.sort == "rating" %}
-                            selected
-                        {% endif %}
-                    >
-                        Rating
-                    </option>
-
-                </select>
-
-            </form>
-
-        </div>
-
-
-        <!-- =================================================
-             RESULTS
-             ================================================= -->
-
-        {% if hotels %}
-
-            <div class="hotels-results">
-
-                <aside
-                    class="hotels-filters"
-                    data-reveal
-                >
-
-                    <div class="filter-header">
-
-                        <span class="section-eyebrow">
-                            REFINE
-                        </span>
-
-                        <h2>
-                            Your search.
-                        </h2>
 
                     </div>
 
-
-                    <form
-                        method="GET"
-                        class="filter-form"
-                    >
-
-                        {% if request.GET.location %}
-
-                            <input
-                                type="hidden"
-                                name="location"
-                                value="{{ request.GET.location }}"
-                            >
-
-                        {% endif %}
-
-
-                        {% if request.GET.q %}
-
-                            <input
-                                type="hidden"
-                                name="q"
-                                value="{{ request.GET.q }}"
-                            >
-
-                        {% endif %}
-
-
-                        <div class="filter-group">
-
-                            <label for="min_price">
-                                Minimum price
-                            </label>
-
-                            <input
-                                id="min_price"
-                                name="min_price"
-                                type="number"
-                                min="0"
-                                placeholder="₹0"
-                                value="{{ request.GET.min_price }}"
-                            >
-
-                        </div>
-
-
-                        <div class="filter-group">
-
-                            <label for="max_price">
-                                Maximum price
-                            </label>
-
-                            <input
-                                id="max_price"
-                                name="max_price"
-                                type="number"
-                                min="0"
-                                placeholder="₹10,000"
-                                value="{{ request.GET.max_price }}"
-                            >
-
-                        </div>
-
-
-                        <div class="filter-group">
-
-                            <label for="rating">
-                                Minimum rating
-                            </label>
-
-                            <select
-                                id="rating"
-                                name="rating"
-                            >
-
-                                <option value="">
-                                    Any rating
-                                </option>
-
-                                <option value="5"
-                                    {% if request.GET.rating == "5" %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    5 / 5
-                                </option>
-
-                                <option value="4"
-                                    {% if request.GET.rating == "4" %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    4+ / 5
-                                </option>
-
-                                <option value="3"
-                                    {% if request.GET.rating == "3" %}
-                                        selected
-                                    {% endif %}
-                                >
-                                    3+ / 5
-                                </option>
-
-                            </select>
-
-                        </div>
-
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary"
-                        >
-                            Apply filters
-                        </button>
-
-
-                        <a
-                            href="{% url 'hotel_list' %}"
-                            class="btn btn-ghost"
-                        >
-                            Clear filters
-                        </a>
-
-                    </form>
-
-                </aside>
-
-
-                <main class="hotels-grid">
-
-                    {% for hotel in hotels %}
-
-                        <div
-                            data-reveal
-                            data-reveal-delay="{{ forloop.counter0|add:'50' }}"
-                        >
-
-                            {% include "components/hotel_card.html" %}
-
-                        </div>
-
-                    {% endfor %}
-
-                </main>
-
-            </div>
-
-        {% else %}
-
-            <div
-                class="empty-state"
-                data-reveal
-            >
-
-                <div class="empty-state-icon">
-                    ◇
                 </div>
 
-                <h3>
-                    No stays found.
-                </h3>
+                {% if hotels %}
 
-                <p>
-                    Try widening your price range,
-                    changing your destination,
-                    or clearing your filters.
-                </p>
+                    <div class="hotel-grid">
 
-                <a
-                    href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
-                    class="btn btn-primary"
-                >
-                    Show all stays
-                </a>
+                        {% for hotel in hotels %}
 
-            </div>
+                            <article class="hotel-card">
 
-        {% endif %}
+                                <div class="hotel-card-body">
+
+                                    <div class="hotel-card-top">
+
+                                        <div class="hotel-card-location">
+                                            {{ hotel.location }}
+                                        </div>
+
+                                        <div class="hotel-rating-badge">
+                                            ★ {{ hotel.star_rating|floatformat:0 }}
+                                        </div>
+
+                                    </div>
+
+                                    <h3>
+                                        {{ hotel.name }}
+                                    </h3>
+
+                                    {% if hotel.description %}
+                                        <p class="hotel-card-description">
+                                            {{ hotel.description|truncatewords:24 }}
+                                        </p>
+                                    {% endif %}
+
+                                    <div class="hotel-card-meta">
+
+                                        <span class="hotel-meta-pill">
+                                            {% if hotel.review_count %}
+                                                ★ {{ hotel.review_average|floatformat:1 }}
+                                                · {{ hotel.review_count }}
+                                                review{{ hotel.review_count|pluralize }}
+                                            {% else %}
+                                                ★ {{ hotel.star_rating|floatformat:1 }}
+                                                · New stay
+                                            {% endif %}
+                                        </span>
+
+                                        {% if hotel.rooms.count %}
+                                            <span class="hotel-meta-pill">
+                                                {{ hotel.rooms.count }} room{{ hotel.rooms.count|pluralize }}
+                                            </span>
+                                        {% endif %}
+
+                                    </div>
+
+                                    <div class="hotel-card-score">
+                                        <span class="hotel-score-dot"></span>
+                                        Stay Score ·
+                                        <strong>{{ hotel.stay_score }}</strong>
+                                    </div>
+
+                                    <div class="hotel-card-footer">
+
+                                        <div class="hotel-card-price">
+                                            <span>From</span>
+
+                                            <strong>
+                                                ₹{{ hotel.offer_price|floatformat:0 }}
+                                            </strong>
+
+                                            <small>
+                                                / night
+                                            </small>
+                                        </div>
+
+                                        <a
+                                            href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
+                                            class="hotel-card-button"
+                                        >
+                                            View stay →
+                                        </a>
+
+                                    </div>
+
+                                </div>
+
+                            </article>
+
+                        {% endfor %}
+
+                    </div>
+
+                {% else %}
+
+                    <div class="hotel-empty">
+
+                        <div class="hotel-empty-icon">
+                            ⌕
+                        </div>
+
+                        <h3>
+                            No stays found.
+                        </h3>
+
+                        <p>
+                            Try widening your price range or searching
+                            another destination.
+                        </p>
+
+                    </div>
+
+                {% endif %}
+
+            </section>
+
+        </div>
 
     </div>
-
-</section>
+</main>
 
 {% endblock %}

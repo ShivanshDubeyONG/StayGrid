@@ -93,7 +93,13 @@
                 {% elif hotel.rooms.all %}
 
                     <strong>
-                        From ₹{{ hotel.rooms.first.price|floatformat:0 }}
+                        <div class="hotel-card-price">
+                            <span>From</span>
+                            <strong>
+                                ₹{% if hotel.offer_price %}{{ hotel.offer_price|floatformat:0 }}{% else %}{{ hotel.original_price|floatformat:0 }}{% endif %}
+                            </strong>
+                            <small>/ night</small>
+                        </div>
                     </strong>
 
                     <span>

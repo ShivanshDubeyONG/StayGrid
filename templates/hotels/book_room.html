@@ -1,300 +1,820 @@
 {% extends "base.html" %}
-{% load static %}
 
-{% block title %}Book Your Stay — StayGrid{% endblock %}
+{% block title %}Book your room · StayGrid{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/booking.css' %}">
+<style>
+    .booking-page {
+        min-height: calc(100vh - 70px);
+        padding: 52px 0 90px;
+        background: var(--color-bg);
+    }
+
+    .booking-shell {
+        max-width: 1080px;
+        margin: 0 auto;
+    }
+
+    /* HEADER */
+
+    .booking-header {
+        margin-bottom: 34px;
+    }
+
+    .booking-eyebrow {
+        margin-bottom: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .booking-header h1 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(40px, 5vw, 58px);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        color: var(--color-text);
+    }
+
+    .booking-header p {
+        margin: 14px 0 0;
+        color: var(--color-text-secondary);
+        font-size: 15px;
+    }
+
+    /* LAYOUT */
+
+    .booking-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 1.5fr) minmax(300px, 0.8fr);
+        gap: 20px;
+        align-items: start;
+    }
+
+    /* MAIN CARD */
+
+    .booking-main-card,
+    .booking-summary {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 20px;
+    }
+
+    .booking-main-card {
+        padding: 30px;
+    }
+
+    .booking-section-label {
+        margin-bottom: 9px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .room-name {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 34px;
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+    }
+
+    .room-location {
+        margin-top: 8px;
+        font-size: 14px;
+        color: var(--color-text-secondary);
+    }
+
+    .room-type-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 18px;
+    }
+
+    .room-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 7px 11px;
+        border-radius: 999px;
+        background: var(--color-accent-soft);
+        color: var(--color-text);
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    /* STAY DETAILS */
+
+    .stay-details {
+        margin-top: 30px;
+        border-top: 1px solid var(--color-border-light);
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .stay-details-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .stay-detail {
+        padding: 20px 0;
+    }
+
+    .stay-detail:nth-child(2) {
+        padding-left: 24px;
+        border-left: 1px solid var(--color-border-light);
+    }
+
+    .stay-detail-label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .stay-detail-date {
+        display: block;
+        font-family: "Playfair Display", serif;
+        font-size: 22px;
+        color: var(--color-text);
+    }
+
+    .stay-detail-weekday {
+        display: block;
+        margin-top: 3px;
+        font-size: 12px;
+        color: var(--color-text-secondary);
+    }
+
+    /* GUESTS */
+
+    .guest-section {
+        margin-top: 27px;
+    }
+
+    .guest-box {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        padding: 15px 16px;
+        border: 1px solid var(--color-border);
+        border-radius: 12px;
+        background: var(--color-bg);
+    }
+
+    .guest-title {
+        font-size: 14px;
+        font-weight: 700;
+    }
+
+    .guest-subtitle {
+        margin-top: 3px;
+        font-size: 12px;
+        color: var(--color-text-muted);
+    }
+
+    .guest-count {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 34px;
+        height: 30px;
+        padding: 0 10px;
+        border-radius: 999px;
+        background: var(--color-dark);
+        color: white;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    /* NOTE */
+
+    .booking-note {
+        display: flex;
+        gap: 11px;
+        margin-top: 20px;
+        padding: 13px 14px;
+        border-radius: 11px;
+        background: var(--color-accent-soft);
+        color: var(--color-text-secondary);
+        font-size: 12px;
+        line-height: 1.5;
+    }
+
+    .booking-note-icon {
+        flex-shrink: 0;
+        font-weight: 700;
+        color: var(--color-text);
+    }
+
+    /* FORM */
+
+    .booking-form {
+        margin-top: 28px;
+    }
+
+    .hidden-date-fields {
+        display: none;
+    }
+
+    .form-errors {
+        margin-bottom: 18px;
+        padding: 13px 14px;
+        border: 1px solid #dfcaca;
+        border-radius: 11px;
+        background: #fbf3f3;
+        color: #713f3f;
+        font-size: 13px;
+    }
+
+    .confirm-button {
+        width: 100%;
+        min-height: 50px;
+        border: 0;
+        border-radius: 12px;
+        background: var(--color-dark);
+        color: white;
+        font: inherit;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.2s ease;
+    }
+
+    .confirm-button:hover {
+        background: var(--color-dark-soft);
+        transform: translateY(-1px);
+    }
+
+    .confirm-button:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .secure-note {
+        margin-top: 10px;
+        text-align: center;
+        font-size: 11px;
+        color: var(--color-text-muted);
+    }
+
+    /* SUMMARY */
+
+    .booking-summary {
+        position: sticky;
+        top: 90px;
+        overflow: hidden;
+    }
+
+    .summary-top {
+        padding: 25px 25px 21px;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .summary-eyebrow {
+        margin-bottom: 8px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .summary-hotel {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 25px;
+        line-height: 1.15;
+    }
+
+    .summary-location {
+        margin-top: 6px;
+        font-size: 12px;
+        color: var(--color-text-secondary);
+    }
+
+    .summary-room {
+        margin-top: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 11px 12px;
+        border-radius: 10px;
+        background: var(--color-bg);
+    }
+
+    .summary-room-name {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .summary-room-number {
+        margin-top: 3px;
+        font-size: 11px;
+        color: var(--color-text-muted);
+    }
+
+    .summary-room-price {
+        text-align: right;
+        font-size: 14px;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+    .summary-room-price small {
+        display: block;
+        margin-top: 2px;
+        font-size: 10px;
+        font-weight: 400;
+        color: var(--color-text-muted);
+    }
+
+    .summary-body {
+        padding: 23px 25px 25px;
+    }
+
+    .summary-dates {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 10px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .summary-date-label {
+        display: block;
+        margin-bottom: 4px;
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .summary-date-value {
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .summary-arrow {
+        color: var(--color-text-muted);
+        font-size: 14px;
+    }
+
+    .price-breakdown {
+        padding: 20px 0;
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .price-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 11px;
+        font-size: 13px;
+        color: var(--color-text-secondary);
+    }
+
+    .price-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .price-row strong {
+        color: var(--color-text);
+    }
+
+    .summary-total {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 15px;
+        padding-top: 20px;
+    }
+
+    .summary-total-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .summary-total-price {
+        font-size: 25px;
+        font-weight: 700;
+        color: var(--color-text);
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 850px) {
+        .booking-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-summary {
+            position: static;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .booking-page {
+            padding: 35px 0 60px;
+        }
+
+        .booking-main-card {
+            padding: 21px;
+        }
+
+        .room-name {
+            font-size: 28px;
+        }
+
+        .stay-details-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .stay-detail:nth-child(2) {
+            padding-left: 0;
+            border-left: 0;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .booking-summary {
+            border-radius: 17px;
+        }
+    }
+</style>
 {% endblock %}
 
 {% block content %}
 
-<section class="booking-page">
+<main class="booking-page">
 
-    <div class="container">
+    <div class="container booking-shell">
+
+        <!-- HEADER -->
 
         <header class="booking-header">
-            <span class="section-eyebrow">STAYGRID RESERVATION</span>
 
-            <h1>Make it your stay.</h1>
+            <div class="booking-eyebrow">
+                Complete your stay
+            </div>
+
+            <h1>
+                Book your room.
+            </h1>
 
             <p>
-                Choose your dates, tell us who's coming,
-                and we'll take care of the rest.
+                Review your stay details and confirm your reservation.
             </p>
+
         </header>
 
 
         <div class="booking-layout">
 
-            <!-- ================= FORM ================= -->
+            <!-- LEFT -->
 
-            <main>
+            <section class="booking-main-card">
 
-                <form method="POST" class="booking-card">
+                <div class="booking-section-label">
+                    Your room
+                </div>
 
-                    {% csrf_token %}
+                <h2 class="room-name">
+                    {{ room.hotel.name }}
+                </h2>
 
-                    <section class="booking-section">
+                <div class="room-location">
+                    {{ room.hotel.location }}
+                </div>
 
-                        <h2>Your dates</h2>
+                <div class="room-type-row">
 
-                        <div class="booking-dates">
+                    <span class="room-pill">
+                        {{ room.get_room_type_display }}
+                    </span>
 
-                            <div class="form-group">
+                    <span class="room-pill">
+                        Room {{ room.room_number }}
+                    </span>
 
-                                <label
-                                    class="form-label"
-                                    for="check_in"
-                                >
-                                    Check in
-                                </label>
-
-                                <input
-                                    id="check_in"
-                                    name="check_in"
-                                    type="date"
-                                    class="form-control"
-                                    required
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label
-                                    class="form-label"
-                                    for="check_out"
-                                >
-                                    Check out
-                                </label>
-
-                                <input
-                                    id="check_out"
-                                    name="check_out"
-                                    type="date"
-                                    class="form-control"
-                                    required
-                                >
-
-                            </div>
-
-                        </div>
-
-                    </section>
-
-
-                    <section class="booking-section">
-
-                        <h2>Guests</h2>
-
-                        <div class="form-group">
-
-                            <label
-                                class="form-label"
-                                for="guests"
-                            >
-                                Number of guests
-                            </label>
-
-                            <input
-                                id="guests"
-                                name="guests"
-                                type="number"
-                                class="form-control"
-                                min="1"
-                                max="20"
-                                value="1"
-                                required
-                            >
-
-                            <p class="form-help">
-                                Select the total number of guests
-                                staying in this room.
-                            </p>
-
-                        </div>
-
-                    </section>
-
-
-                    <section class="booking-section">
-
-                        <h2>Guest information</h2>
-
-                        <div class="booking-dates">
-
-                            <div class="form-group">
-
-                                <label
-                                    class="form-label"
-                                    for="first_name"
-                                >
-                                    First name
-                                </label>
-
-                                <input
-                                    id="first_name"
-                                    name="first_name"
-                                    type="text"
-                                    class="form-control"
-                                    value="{{ request.user.first_name }}"
-                                    required
-                                >
-
-                            </div>
-
-
-                            <div class="form-group">
-
-                                <label
-                                    class="form-label"
-                                    for="last_name"
-                                >
-                                    Last name
-                                </label>
-
-                                <input
-                                    id="last_name"
-                                    name="last_name"
-                                    type="text"
-                                    class="form-control"
-                                    value="{{ request.user.last_name }}"
-                                    required
-                                >
-
-                            </div>
-
-                        </div>
-
-
-                        <div
-                            class="form-group"
-                            style="margin-top:14px;"
-                        >
-
-                            <label
-                                class="form-label"
-                                for="email"
-                            >
-                                Email
-                            </label>
-
-                            <input
-                                id="email"
-                                name="email"
-                                type="email"
-                                class="form-control"
-                                value="{{ request.user.email }}"
-                                required
-                            >
-
-                        </div>
-
-                    </section>
-
-
-                    <section class="booking-section">
-
-                        <h2>Almost there.</h2>
-
-                        <p class="form-help">
-                            Review your dates and guest details
-                            before confirming your reservation.
-                        </p>
-
-                        <button
-                            type="submit"
-                            class="btn btn-primary booking-submit"
-                        >
-                            Confirm reservation
-                        </button>
-
-                    </section>
-
-                </form>
-
-            </main>
-
-
-            <!-- ================= SUMMARY ================= -->
-
-            <aside class="booking-summary">
-
-                <div class="booking-summary-image">
-
-                    {% if hotel.image %}
-
-                        <img
-                            src="{{ hotel.image.url }}"
-                            alt="{{ hotel.name }}"
-                        >
-
-                    {% else %}
-
-                        <div class="hotel-image-placeholder">
-                            StayGrid
-                        </div>
-
-                    {% endif %}
+                    <span class="room-pill">
+                        Up to {{ room.capacity }} guest{{ room.capacity|pluralize }}
+                    </span>
 
                 </div>
 
 
-                <div class="booking-summary-body">
+                <!-- DATES -->
 
-                    <span class="section-eyebrow">
-                        YOUR ROOM
+                <div class="stay-details">
+
+                    <div class="stay-details-grid">
+
+                        <div class="stay-detail">
+
+                            <span class="stay-detail-label">
+                                Check in
+                            </span>
+
+                            <span class="stay-detail-date">
+                                {% if check_in %}
+                                    {{ check_in|date:"d M Y" }}
+                                {% else %}
+                                    Select date
+                                {% endif %}
+                            </span>
+
+                            {% if check_in %}
+                                <span class="stay-detail-weekday">
+                                    {{ check_in|date:"l" }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+
+                        <div class="stay-detail">
+
+                            <span class="stay-detail-label">
+                                Check out
+                            </span>
+
+                            <span class="stay-detail-date">
+                                {% if check_out %}
+                                    {{ check_out|date:"d M Y" }}
+                                {% else %}
+                                    Select date
+                                {% endif %}
+                            </span>
+
+                            {% if check_out %}
+                                <span class="stay-detail-weekday">
+                                    {{ check_out|date:"l" }}
+                                </span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- GUESTS -->
+
+                <div class="guest-section">
+
+                    <div class="booking-section-label">
+                        Guests
+                    </div>
+
+                    <div class="guest-box">
+
+                        <div>
+                            <div class="guest-title">
+                                Your party
+                            </div>
+
+                            <div class="guest-subtitle">
+                                Selected during search
+                            </div>
+                        </div>
+
+                        <div class="guest-count">
+                            {{ guests|default:"1" }}
+                            &nbsp;
+                            guest{{ guests|default:"1"|pluralize }}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="booking-note">
+                    <span class="booking-note-icon">✓</span>
+
+                    <span>
+                        Your dates were selected during search.
+                        You're booking this specific room for the
+                        selected stay period.
                     </span>
+                </div>
 
-                    <h2>
-                        {{ room.room_type }}
+
+                <!-- FORM -->
+
+                <form
+                    method="post"
+                    class="booking-form"
+                    data-booking-form
+                    data-price="{{ room.price_per_night }}"
+                >
+
+                    {% csrf_token %}
+
+                    <div class="hidden-date-fields">
+
+                        {{ form.check_in }}
+
+                        {{ form.check_out }}
+
+                        <input
+                            type="hidden"
+                            name="guests"
+                            value="{{ guests|default:'1' }}"
+                        >
+
+                    </div>
+
+
+                    {% if form.non_field_errors %}
+
+                        <div class="form-errors">
+                            {{ form.non_field_errors }}
+                        </div>
+
+                    {% endif %}
+
+
+                    {% if not check_in or not check_out %}
+
+                        <button
+                            type="submit"
+                            class="confirm-button"
+                            disabled
+                        >
+                            Select dates first
+                        </button>
+
+                    {% else %}
+
+                        <button
+                            type="submit"
+                            class="confirm-button"
+                        >
+                            Confirm booking
+                            <span style="margin-left:7px;">→</span>
+                        </button>
+
+                    {% endif %}
+
+                    <div class="secure-note">
+                        No payment is required for this demo reservation.
+                    </div>
+
+                </form>
+
+            </section>
+
+
+            <!-- RIGHT SUMMARY -->
+
+            <aside class="booking-summary">
+
+                <div class="summary-top">
+
+                    <div class="summary-eyebrow">
+                        Booking summary
+                    </div>
+
+                    <h2 class="summary-hotel">
+                        {{ room.hotel.name }}
                     </h2>
 
-                    <p class="booking-summary-location">
-                        {{ hotel.name }}
-                        {% if hotel.location %}
-                            · {{ hotel.location }}
-                        {% endif %}
-                    </p>
+                    <div class="summary-location">
+                        {{ room.hotel.location }}
+                    </div>
 
 
-                    <div class="price-row">
+                    <div class="summary-room">
 
-                        <span>
-                            Room rate
-                        </span>
+                        <div>
+                            <div class="summary-room-name">
+                                {{ room.get_room_type_display }}
+                            </div>
 
-                        <strong>
-                            ₹{{ room.price|floatformat:0 }}
-                        </strong>
+                            <div class="summary-room-number">
+                                Room {{ room.room_number }}
+                            </div>
+                        </div>
+
+                        <div class="summary-room-price">
+                            ₹{{ room.price_per_night|floatformat:0 }}
+                            <small>per night</small>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="summary-body">
+
+                    <!-- DATES -->
+
+                    <div class="summary-dates">
+
+                        <div>
+
+                            <span class="summary-date-label">
+                                Check in
+                            </span>
+
+                            <span class="summary-date-value">
+                                {% if check_in %}
+                                    {{ check_in|date:"d M Y" }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+
+                        </div>
+
+                        <div class="summary-arrow">
+                            →
+                        </div>
+
+                        <div>
+
+                            <span class="summary-date-label">
+                                Check out
+                            </span>
+
+                            <span class="summary-date-value">
+                                {% if check_out %}
+                                    {{ check_out|date:"d M Y" }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </span>
+
+                        </div>
 
                     </div>
 
 
-                    <div class="price-row">
+                    <!-- PRICE -->
 
-                        <span>
-                            Stay length
-                        </span>
+                    <div class="price-breakdown">
 
-                        <span data-booking-nights>
-                            Select dates
-                        </span>
+                        <div class="price-row">
+
+                            <span>
+                                ₹{{ room.price_per_night|floatformat:0 }}
+                                ×
+                                {{ nights|default:"0" }}
+                                night{{ nights|default:"0"|pluralize }}
+                            </span>
+
+                            <strong>
+                                ₹{{ total_price|floatformat:0 }}
+                            </strong>
+
+                        </div>
+
+                        <div class="price-row">
+
+                            <span>
+                                Guests
+                            </span>
+
+                            <strong>
+                                {{ guests|default:"1" }}
+                            </strong>
+
+                        </div>
 
                     </div>
 
 
-                    <div class="price-row total">
+                    <!-- TOTAL -->
 
-                        <span>
-                            Estimated total
+                    <div class="summary-total">
+
+                        <span class="summary-total-label">
+                            Total
                         </span>
 
-                        <strong data-booking-total>
-                            ₹{{ room.price|floatformat:0 }}
-                        </strong>
+                        <span class="summary-total-price">
+                            ₹{{ total_price|floatformat:0 }}
+                        </span>
 
                     </div>
 
@@ -306,6 +826,6 @@
 
     </div>
 
-</section>
+</main>
 
 {% endblock %}

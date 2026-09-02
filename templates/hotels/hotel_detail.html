@@ -6,17 +6,13 @@
 {% endblock %}
 
 {% block extra_css %}
-<link
-    rel="stylesheet"
-    href="{% static 'css/hotels.css' %}"
->
+<link rel="stylesheet" href="{% static 'css/hotels.css' %}">
 {% endblock %}
 
 {% block content %}
 
 <main class="hotel-detail-page">
 
-    <!-- HERO -->
     <section class="hotel-detail-hero">
 
         <div class="hotel-detail-hero-inner">
@@ -26,7 +22,10 @@
                 <div class="hotel-title-row">
 
                     <div>
-                        <span class="eyebrow">STAY</span>
+
+                        <span class="eyebrow">
+                            STAY
+                        </span>
 
                         <h1>
                             {{ hotel.name }}
@@ -35,7 +34,9 @@
                         <p class="hotel-location">
                             {{ hotel.location }}
                         </p>
+
                     </div>
+
 
                     <div class="hotel-rating">
 
@@ -58,7 +59,6 @@
     </section>
 
 
-    <!-- HOTEL INFORMATION -->
     <section class="hotel-detail-content">
 
         <div class="hotel-info-grid">
@@ -76,7 +76,6 @@
             </div>
 
 
-            <!-- STAY SCORE -->
             <div class="hotel-score-card">
 
                 <span class="eyebrow">
@@ -92,7 +91,6 @@
         </div>
 
 
-        <!-- SELECTED STAY -->
         {% if request.GET.check_in and request.GET.check_out %}
 
         <div class="selected-stay">
@@ -117,7 +115,6 @@
         {% endif %}
 
 
-        <!-- ROOMS -->
         <section class="rooms-section">
 
             <div class="section-heading">
@@ -218,7 +215,6 @@
         </section>
 
 
-        <!-- REVIEWS -->
         <section class="hotel-reviews">
 
             <div class="section-heading">

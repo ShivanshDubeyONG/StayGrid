@@ -150,13 +150,18 @@ class Booking(models.Model):
     )
 
     check_in = models.DateField()
+
     check_out = models.DateField()
 
-    total_price = models.DecimalField(
-        max_digits=10,
-        decimal_places=2,
-        validators=[MinValueValidator(0)]
+    guests = models.PositiveIntegerField(
+        default=1
     )
+
+    total_price = models.DecimalField(
+            max_digits=10,
+            decimal_places=2,
+            validators=[MinValueValidator(0)]
+        )
 
     status = models.CharField(
         max_length=20,

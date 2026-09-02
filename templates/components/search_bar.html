@@ -1,57 +1,44 @@
 <form
-    method="GET"
+    method="get"
     action="{% url 'hotel_list' %}"
-    class="search-panel"
+    class="search-bar"
     data-search-form
 >
 
     <!-- DESTINATION -->
 
     <div class="search-field search-destination">
+        <span class="search-field-icon">⌖</span>
 
-        <span class="search-icon">
-            ⌖
-        </span>
-
-        <div class="destination-input-wrap">
-
+        <div class="search-field-content">
             <label for="search-location">
-                Destination
+                Where
             </label>
 
             <input
                 id="search-location"
                 type="text"
                 name="location"
-                value="{{ request.GET.location|default:'' }}"
-                placeholder="Where are you going?"
+                value="{{ request.GET.location }}"
+                placeholder="Bengaluru"
                 autocomplete="off"
+                required
             >
 
-            <!-- AUTOCOMPLETE -->
             <div
                 id="destination-suggestions"
                 class="destination-suggestions"
             ></div>
-
         </div>
-
     </div>
-
-
-    <div class="search-divider"></div>
 
 
     <!-- CHECK IN -->
 
     <div class="search-field">
+        <span class="search-field-icon">◷</span>
 
-        <span class="search-icon">
-            ◷
-        </span>
-
-        <div>
-
+        <div class="search-field-content">
             <label for="search-check-in">
                 Check in
             </label>
@@ -60,27 +47,19 @@
                 id="search-check-in"
                 type="date"
                 name="check_in"
-                value="{{ request.GET.check_in|default:'' }}"
+                value="{{ request.GET.check_in }}"
+                required
             >
-
         </div>
-
     </div>
-
-
-    <div class="search-divider"></div>
 
 
     <!-- CHECK OUT -->
 
     <div class="search-field">
+        <span class="search-field-icon">◷</span>
 
-        <span class="search-icon">
-            ◷
-        </span>
-
-        <div>
-
+        <div class="search-field-content">
             <label for="search-check-out">
                 Check out
             </label>
@@ -89,27 +68,19 @@
                 id="search-check-out"
                 type="date"
                 name="check_out"
-                value="{{ request.GET.check_out|default:'' }}"
+                value="{{ request.GET.check_out }}"
+                required
             >
-
         </div>
-
     </div>
-
-
-    <div class="search-divider"></div>
 
 
     <!-- GUESTS -->
 
     <div class="search-field search-guests">
+        <span class="search-field-icon">◉</span>
 
-        <span class="search-icon">
-            ◉
-        </span>
-
-        <div>
-
+        <div class="search-field-content">
             <label for="search-guests">
                 Guests
             </label>
@@ -121,21 +92,131 @@
                 value="{{ request.GET.guests|default:'1' }}"
                 min="1"
                 max="20"
+                placeholder="1"
+                required
             >
-
         </div>
-
     </div>
 
 
-    <!-- SUBMIT -->
+    <!-- SEARCH -->
 
     <button
         type="submit"
         class="search-submit"
-        aria-label="Search stays"
+        data-search-submit
     >
-        →
+        Search stays
+        <span>→</span>
     </button>
 
 </form>
+
+
+<script>
+(function () {
+
+    const form = document.querySelector("[data-search-form]");
+
+    if (!form) return;
+
+    const locationInput = document.querySelector("#search-location");
+    const checkIn = document.querySelector("#search-check-in");
+    const checkOut = document.querySelector("#search-check-out");
+    const guests = document.querySelector("#search-guests");
+
+    /*
+     * TODAY
+     */
+
+    const today = new Date();
+    const todayString =
+        today.getFullYear() +
+        "-" +
+        String(today.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(today.getDate()).padStart(2, "0");
+
+    checkIn.min = todayString;
+    checkOut.min = todayString;
+
+
+    /*
+     * CHECK-IN CHANGES
+     */
+
+    checkIn.addEventListener("change", function () {
+
+        if (!checkIn.value) {
+            checkOut.value = "";
+            checkOut.min = todayString;
+            return;
+        }
+
+        const nextDay = new Date(checkIn.value + "T00:00:00");
+        nextDay.setDate(nextDay.getDate() + 1);
+
+        const nextDayString =
+            nextDay.getFullYear() +
+            "-" +
+            String(nextDay.getMonth() + 1).padStart(2, "0") +
+            "-" +
+            String(nextDay.getDate()).padStart(2, "0");
+
+        checkOut.min = nextDayString;
+
+        /*
+         * If current checkout is now invalid,
+         * clear it so the user has to choose again.
+         */
+        if (checkOut.value && checkOut.value <= checkIn.value) {
+            checkOut.value = "";
+        }
+    });
+
+
+    /*
+     * FORM VALIDATION
+     */
+
+    form.addEventListener("submit", function (event) {
+
+        if (!locationInput.value.trim()) {
+            event.preventDefault();
+            locationInput.focus();
+            return;
+        }
+
+        if (!checkIn.value) {
+            event.preventDefault();
+            checkIn.focus();
+            return;
+        }
+
+        if (!checkOut.value) {
+            event.preventDefault();
+            checkOut.focus();
+            return;
+        }
+
+        if (checkOut.value <= checkIn.value) {
+            event.preventDefault();
+
+            alert("Check-out must be after check-in.");
+
+            checkOut.focus();
+            return;
+        }
+
+        if (!guests.value || Number(guests.value) < 1) {
+            event.preventDefault();
+
+            guests.value = 1;
+            guests.focus();
+            return;
+        }
+
+    });
+
+})();
+</script>

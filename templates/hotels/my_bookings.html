@@ -1,100 +1,551 @@
 {% extends "base.html" %}
 
-{% block title %}My Bookings — StayGrid{% endblock %}
+{% block title %}My Bookings · StayGrid{% endblock %}
+
+{% block extra_css %}
+<style>
+    .bookings-page {
+        padding: 52px 0 90px;
+        background: var(--color-bg);
+        min-height: calc(100vh - 70px);
+    }
+
+    .bookings-header {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 30px;
+        margin-bottom: 38px;
+    }
+
+    .bookings-eyebrow {
+        margin-bottom: 10px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .bookings-header h1 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: clamp(38px, 5vw, 58px);
+        line-height: 0.98;
+        letter-spacing: -0.04em;
+        color: var(--color-text);
+    }
+
+    .bookings-header p {
+        margin: 14px 0 0;
+        color: var(--color-text-secondary);
+        font-size: 15px;
+    }
+
+    .bookings-count {
+        flex-shrink: 0;
+        padding: 12px 17px;
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        background: var(--color-surface);
+        font-size: 13px;
+        color: var(--color-text-secondary);
+    }
+
+    .bookings-count strong {
+        color: var(--color-text);
+    }
+
+    /* BOOKING LIST */
+
+    .bookings-list {
+        display: grid;
+        gap: 18px;
+        max-width: 1050px;
+    }
+
+    .booking-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: 0.2s ease;
+    }
+
+    .booking-card:hover {
+        border-color: var(--color-accent-deep);
+        box-shadow: 0 16px 40px rgba(23, 23, 23, 0.06);
+    }
+
+    .booking-card-main {
+        padding: 25px 28px 24px;
+    }
+
+    /* TOP */
+
+    .booking-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 25px;
+    }
+
+    .booking-number {
+        margin-bottom: 7px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .booking-hotel-name {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 29px;
+        line-height: 1.1;
+        letter-spacing: -0.025em;
+        color: var(--color-text);
+    }
+
+    .booking-location {
+        margin-top: 7px;
+        font-size: 13px;
+        color: var(--color-text-secondary);
+    }
+
+    /* STATUS */
+
+    .booking-status {
+        flex-shrink: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 8px 11px;
+        border-radius: 999px;
+        background: var(--color-accent-soft);
+        color: var(--color-text);
+        font-size: 11px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.07em;
+    }
+
+    .booking-status-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--color-accent-deep);
+    }
+
+    /* DETAILS */
+
+    .booking-details {
+        display: grid;
+        grid-template-columns: 1.1fr 1fr 1fr 0.7fr;
+        border-top: 1px solid var(--color-border-light);
+        border-bottom: 1px solid var(--color-border-light);
+    }
+
+    .booking-detail {
+        min-width: 0;
+        padding: 17px 18px 17px 0;
+    }
+
+    .booking-detail + .booking-detail {
+        padding-left: 18px;
+        border-left: 1px solid var(--color-border-light);
+    }
+
+    .booking-detail-label {
+        display: block;
+        margin-bottom: 7px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--color-text-muted);
+    }
+
+    .booking-detail-value {
+        display: block;
+        font-size: 14px;
+        font-weight: 600;
+        color: var(--color-text);
+    }
+
+    .booking-detail-value.large {
+        font-size: 17px;
+    }
+
+    .booking-detail-sub {
+        display: block;
+        margin-top: 3px;
+        font-size: 11px;
+        color: var(--color-text-muted);
+    }
+
+    /* FOOTER */
+
+    .booking-card-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        padding-top: 20px;
+    }
+
+    .booking-total-label {
+        display: block;
+        margin-bottom: 3px;
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: var(--color-text-muted);
+    }
+
+    .booking-total {
+        font-size: 22px;
+        font-weight: 700;
+        color: var(--color-text);
+    }
+
+    .booking-actions {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+    }
+
+    .booking-button {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 40px;
+        padding: 0 16px;
+        border-radius: 10px;
+        border: 1px solid var(--color-border);
+        background: var(--color-surface);
+        color: var(--color-text);
+        text-decoration: none;
+        font: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        box-sizing: border-box;
+    }
+
+    .booking-button:hover {
+        background: var(--color-bg);
+    }
+
+    .booking-button.primary {
+        background: var(--color-dark);
+        border-color: var(--color-dark);
+        color: white;
+    }
+
+    .booking-button.primary:hover {
+        background: var(--color-dark-soft);
+    }
+
+    .booking-button.cancel {
+        color: #6f3f3f;
+    }
+
+    .booking-button.cancel:hover {
+        background: #faf2f2;
+        border-color: #d8bebe;
+    }
+
+    /* EMPTY */
+
+    .bookings-empty {
+        max-width: 700px;
+        padding: 70px 30px;
+        text-align: center;
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 20px;
+    }
+
+    .empty-icon {
+        width: 54px;
+        height: 54px;
+        margin: 0 auto 18px;
+        display: grid;
+        place-items: center;
+        border-radius: 50%;
+        background: var(--color-accent-soft);
+        font-size: 20px;
+    }
+
+    .bookings-empty h2 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 29px;
+    }
+
+    .bookings-empty p {
+        max-width: 420px;
+        margin: 10px auto 22px;
+        color: var(--color-text-secondary);
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    /* RESPONSIVE */
+
+    @media (max-width: 800px) {
+        .bookings-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .booking-details {
+            grid-template-columns: 1fr 1fr;
+        }
+
+        .booking-detail:nth-child(3) {
+            border-left: 0;
+            padding-left: 0;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .booking-detail:nth-child(4) {
+            border-top: 1px solid var(--color-border-light);
+        }
+    }
+
+    @media (max-width: 560px) {
+        .bookings-page {
+            padding: 35px 0 60px;
+        }
+
+        .booking-card-main {
+            padding: 20px;
+        }
+
+        .booking-top {
+            flex-direction: column;
+        }
+
+        .booking-hotel-name {
+            font-size: 24px;
+        }
+
+        .booking-details {
+            grid-template-columns: 1fr;
+        }
+
+        .booking-detail,
+        .booking-detail + .booking-detail,
+        .booking-detail:nth-child(3),
+        .booking-detail:nth-child(4) {
+            padding: 14px 0;
+            border-left: 0;
+            border-top: 1px solid var(--color-border-light);
+        }
+
+        .booking-detail:first-child {
+            border-top: 0;
+        }
+
+        .booking-card-footer {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .booking-actions {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .booking-button {
+            flex: 1;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 
-<section class="page-section bookings-page">
+<main class="bookings-page">
 
     <div class="container">
 
-        <div class="page-heading">
+        <header class="bookings-header">
 
-            <span class="eyebrow">YOUR TRIPS</span>
+            <div>
+                <div class="bookings-eyebrow">
+                    Your trips
+                </div>
 
-            <h1>My bookings.</h1>
+                <h1>My bookings.</h1>
 
-            <p>
-                Everything you've booked through StayGrid,
-                all in one place.
-            </p>
+                <p>
+                    Everything you've booked through StayGrid, all in one place.
+                </p>
+            </div>
 
-        </div>
+            <div class="bookings-count">
+                <strong>{{ bookings|length }}</strong>
+                booking{{ bookings|length|pluralize }}
+            </div>
+
+        </header>
 
 
         {% if bookings %}
 
-            <div class="bookings-list">
+            <section class="bookings-list">
 
                 {% for booking in bookings %}
 
                     <article class="booking-card">
 
-                        <div class="booking-main">
+                        <div class="booking-card-main">
 
-                            <div class="booking-number">
-                                BOOKING #{{ booking.id }}
+                            <!-- HEADER -->
+
+                            <div class="booking-top">
+
+                                <div>
+                                    <div class="booking-number">
+                                        Booking #{{ booking.id }}
+                                    </div>
+
+                                    <h2 class="booking-hotel-name">
+                                        {{ booking.room.hotel.name }}
+                                    </h2>
+
+                                    <div class="booking-location">
+                                        {{ booking.room.hotel.location }}
+                                    </div>
+                                </div>
+
+                                <div class="booking-status">
+                                    <span class="booking-status-dot"></span>
+                                    {{ booking.get_status_display }}
+                                </div>
+
                             </div>
 
-                            <h2>
-                                {{ booking.room.hotel.name }}
-                            </h2>
 
-                            <p class="booking-location">
-                                {{ booking.room.hotel.location }}
-                            </p>
+                            <!-- DETAILS -->
 
                             <div class="booking-details">
 
-                                <div>
-                                    <span>ROOM</span>
-                                    <strong>
-                                        {{ booking.room.name }}
-                                    </strong>
+                                <div class="booking-detail">
+
+                                    <span class="booking-detail-label">
+                                        Room
+                                    </span>
+
+                                    <span class="booking-detail-value">
+                                        {{ booking.room.get_room_type_display }}
+                                    </span>
+
+                                    <span class="booking-detail-sub">
+                                        Room {{ booking.room.room_number }}
+                                    </span>
+
                                 </div>
 
-                                <div>
-                                    <span>CHECK IN</span>
-                                    <strong>
+
+                                <div class="booking-detail">
+
+                                    <span class="booking-detail-label">
+                                        Check in
+                                    </span>
+
+                                    <span class="booking-detail-value large">
                                         {{ booking.check_in|date:"d M Y" }}
-                                    </strong>
+                                    </span>
+
                                 </div>
 
-                                <div>
-                                    <span>CHECK OUT</span>
-                                    <strong>
+
+                                <div class="booking-detail">
+
+                                    <span class="booking-detail-label">
+                                        Check out
+                                    </span>
+
+                                    <span class="booking-detail-value large">
                                         {{ booking.check_out|date:"d M Y" }}
-                                    </strong>
+                                    </span>
+
                                 </div>
+
+
+                                <div class="booking-detail">
+
+                                    <span class="booking-detail-label">
+                                        Guests
+                                    </span>
+
+                                    <span class="booking-detail-value large">
+                                        {{ booking.guests }}
+                                    </span>
+
+                                    <span class="booking-detail-sub">
+                                        guest{{ booking.guests|pluralize }}
+                                    </span>
+
+                                </div>
+
+                            </div>
+
+
+                            <!-- FOOTER -->
+
+                            <div class="booking-card-footer">
 
                                 <div>
-                                    <span>GUESTS</span>
-                                    <strong>
-                                        {{ booking.guests }}
-                                    </strong>
+                                    <span class="booking-total-label">
+                                        Total paid
+                                    </span>
+
+                                    <span class="booking-total">
+                                        ₹{{ booking.total_price|floatformat:0 }}
+                                    </span>
+                                </div>
+
+
+                                <div class="booking-actions">
+
+                                    <a
+                                        href="{% url 'booking_success' booking.id %}"
+                                        class="booking-button primary"
+                                    >
+                                        View booking →
+                                    </a>
+
+                                    {% if booking.status == "PENDING" or booking.status == "CONFIRMED" %}
+
+                                        <form
+                                            method="post"
+                                            action="{% url 'cancel_booking' booking.id %}"
+                                            style="margin:0;"
+                                        >
+                                            {% csrf_token %}
+
+                                            <button
+                                                type="submit"
+                                                class="booking-button cancel"
+                                                onclick="return confirm('Cancel this booking?');"
+                                            >
+                                                Cancel
+                                            </button>
+                                        </form>
+
+                                    {% endif %}
+
                                 </div>
 
                             </div>
-
-                        </div>
-
-
-                        <div class="booking-side">
-
-                            <div class="booking-status">
-                                {{ booking.status|default:"Confirmed" }}
-                            </div>
-
-                            <div class="booking-price">
-                                ₹{{ booking.total_price }}
-                            </div>
-
-                            <a
-                                href="{% url 'booking_success' booking.id %}"
-                                class="btn btn-secondary"
-                            >
-                                View booking
-                            </a>
 
                         </div>
 
@@ -102,42 +553,36 @@
 
                 {% endfor %}
 
-            </div>
+            </section>
 
         {% else %}
 
-            <div class="empty-state">
+            <section class="bookings-empty">
 
                 <div class="empty-icon">
-                    ✦
+                    ◷
                 </div>
 
-                <span class="eyebrow">
-                    NO TRIPS YET
-                </span>
-
-                <h2>
-                    Your next stay is waiting.
-                </h2>
+                <h2>No bookings yet.</h2>
 
                 <p>
-                    Explore StayGrid and find somewhere
-                    worth remembering.
+                    Your future stays will appear here once you make
+                    your first reservation.
                 </p>
 
                 <a
                     href="{% url 'hotel_list' %}"
-                    class="btn btn-primary"
+                    class="booking-button primary"
                 >
-                    Explore stays
+                    Explore stays →
                 </a>
 
-            </div>
+            </section>
 
         {% endif %}
 
     </div>
 
-</section>
+</main>
 
 {% endblock %}

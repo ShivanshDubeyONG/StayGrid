@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 from decimal import Decimal
 from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
@@ -39,65 +40,71 @@ def get_vendor(user):
 # ==========================================================
 
 def hotel_list(request):
-
-    hotels = (
-        Hotel.objects
-        .filter(is_active=True)
-        .prefetch_related(
-            "images",
-            "rooms",
-        )
-    )
-
-    q = request.GET.get("q", "").strip()
     location = request.GET.get("location", "").strip()
-    min_price = request.GET.get("min_price", "").strip()
-    max_price = request.GET.get("max_price", "").strip()
-    rating = request.GET.get("rating", "").strip()
+    check_in = request.GET.get("check_in", "").strip()
+    check_out = request.GET.get("check_out", "").strip()
+    guests = request.GET.get("guests", "").strip()
 
-    # --------------------------------------------------
-    # SEARCH
-    # --------------------------------------------------
-
-    if q:
-        hotels = hotels.filter(
-            Q(name__icontains=q)
-            | Q(location__icontains=q)
-            | Q(description__icontains=q)
+    if not location or not check_in or not check_out or not guests:
+        messages.error(
+            request,
+            "Please select a destination, dates, and number of guests."
         )
+        return redirect("home")
 
-    # Destination search
+    try:
+        check_in_date = datetime.strptime(
+            check_in, "%Y-%m-%d"
+        ).date()
+
+        check_out_date = datetime.strptime(
+            check_out, "%Y-%m-%d"
+        ).date()
+
+    except ValueError:
+        messages.error(request, "Please select valid dates.")
+        return redirect("home")
+
+    if check_in_date < timezone.localdate():
+        messages.error(request, "Check-in cannot be in the past.")
+        return redirect("home")
+
+    if check_out_date <= check_in_date:
+        messages.error(request, "Check-out must be after check-in.")
+        return redirect("home")
+
+    try:
+        guest_count = int(guests)
+
+        if guest_count < 1 or guest_count > 20:
+            raise ValueError
+
+    except ValueError:
+        messages.error(request, "Please select a valid number of guests.")
+        return redirect("home")
+
+    # YOUR EXISTING HOTEL FILTERING CODE STARTS HERE
+    # Search is mandatory before browsing stays
+    if not location or not check_in or not check_out or not guests:
+        return redirect("home")
+
+    hotels = Hotel.objects.filter(is_active=True)
+
     if location:
-        hotels = hotels.filter(
-            location__icontains=location
-        )
+        hotels = hotels.filter(location__icontains=location)
 
-    # --------------------------------------------------
-    # PRICE
-    # --------------------------------------------------
+    min_price = request.GET.get("min_price")
+    max_price = request.GET.get("max_price")
+    rating = request.GET.get("rating")
 
     if min_price:
-        hotels = hotels.filter(
-            offer_price__gte=min_price
-        )
+        hotels = hotels.filter(offer_price__gte=min_price)
 
     if max_price:
-        hotels = hotels.filter(
-            offer_price__lte=max_price
-        )
-
-    # --------------------------------------------------
-    # RATING
-    # --------------------------------------------------
+        hotels = hotels.filter(offer_price__lte=max_price)
 
     if rating:
-        hotels = hotels.filter(
-            star_rating__gte=rating
-        )
-
-    # --------------------------------------------------
-    # STAY SCORE
-    # --------------------------------------------------
+        hotels = hotels.filter(star_rating__gte=rating)
 
     hotels = hotels.annotate(
         review_average=Avg("reviews__rating"),
@@ -119,38 +126,142 @@ def hotel_list(request):
         "hotels/hotel_list.html",
         {
             "hotels": hotels,
-
-            # Search values
-            "query": q,
-            "location": location,
-
-            # Filters
-            "min_price": min_price,
-            "max_price": max_price,
-            "rating": rating,
-
-            # Useful for the results page
-            "result_count": len(hotels),
+            "check_in": check_in,
+            "check_out": check_out,
+            "guests": guests,
         },
     )
 
 
 def stay_score(hotel):
-    reviews = hotel.reviews.all()
+    """
+    StayGrid score out of 100.
 
-    average_rating = reviews.aggregate(
-        avg=Avg("rating")
-    )["avg"] or 0
+    Factors:
+    - Hotel star rating: 40%
+    - Guest reviews: 35%
+    - Number of reviews: 10%
+    - Price value: 15%
+    """
 
-    room_count = hotel.rooms.filter(is_active=True).count()
+    # --------------------------------------------------
+    # STAR RATING
+    # --------------------------------------------------
 
-    rating_score = float(average_rating) * 20
+    star_rating = float(
+        hotel.star_rating or 0
+    )
 
-    room_score = min(room_count * 5, 15)
+    star_score = (
+        star_rating / 5
+    ) * 40
 
-    score = rating_score + room_score
 
-    return round(min(score, 100), 1)
+    # --------------------------------------------------
+    # GUEST REVIEWS
+    # --------------------------------------------------
+
+    average_rating = getattr(
+        hotel,
+        "review_average",
+        None
+    )
+
+    review_count = getattr(
+        hotel,
+        "review_count",
+        None
+    )
+
+
+    if average_rating is None:
+
+        review_data = hotel.reviews.aggregate(
+            average=Avg("rating"),
+            count=Count("id"),
+        )
+
+        average_rating = (
+            review_data["average"] or 0
+        )
+
+        review_count = (
+            review_data["count"] or 0
+        )
+
+    else:
+
+        average_rating = float(
+            average_rating or 0
+        )
+
+        review_count = int(
+            review_count or 0
+        )
+
+
+    review_score = (
+        float(average_rating) / 5
+    ) * 35
+
+
+    # --------------------------------------------------
+    # REVIEW COUNT
+    # --------------------------------------------------
+
+    review_count_score = min(
+        review_count,
+        10
+    )
+
+
+    # --------------------------------------------------
+    # PRICE VALUE
+    # --------------------------------------------------
+
+    average_hotel_price = (
+        Hotel.objects
+        .filter(is_active=True)
+        .aggregate(
+            avg=Avg("offer_price")
+        )["avg"]
+    )
+
+
+    price_score = 0
+
+    if (
+        average_hotel_price
+        and hotel.offer_price
+        and hotel.offer_price > 0
+    ):
+
+        price_ratio = (
+            float(average_hotel_price)
+            / float(hotel.offer_price)
+        )
+
+        price_score = min(
+            max(price_ratio * 15, 0),
+            15
+        )
+
+
+    # --------------------------------------------------
+    # FINAL SCORE
+    # --------------------------------------------------
+
+    score = (
+        star_score
+        + review_score
+        + review_count_score
+        + price_score
+    )
+
+    return round(
+        min(score, 100),
+        1
+    )
 
 @login_required
 def hotel_detail(request, hotel_id):
@@ -187,6 +298,8 @@ def hotel_detail(request, hotel_id):
 @login_required
 def book_room(request, room_id):
 
+    from datetime import date
+
     room = get_object_or_404(
         Room.objects.select_related("hotel"),
         id=room_id,
@@ -194,90 +307,228 @@ def book_room(request, room_id):
         hotel__is_active=True,
     )
 
-    if request.method == "POST":
 
-        form = BookingForm(request.POST)
+    # ==================================================
+    # DATES + GUESTS FROM SEARCH
+    # ==================================================
 
-        if form.is_valid():
+    check_in_param = request.GET.get(
+        "check_in",
+        ""
+    )
 
-            check_in = form.cleaned_data["check_in"]
-            check_out = form.cleaned_data["check_out"]
+    check_out_param = request.GET.get(
+        "check_out",
+        ""
+    )
+
+    guests_param = request.GET.get(
+        "guests",
+        "1"
+    )
+
+
+    try:
+        guests = max(
+            1,
+            int(guests_param)
+        )
+    except (ValueError, TypeError):
+        guests = 1
+
+
+    check_in = None
+    check_out = None
+    nights = None
+    total_price = None
+
+
+    if check_in_param and check_out_param:
+
+        try:
+
+            check_in = date.fromisoformat(
+                check_in_param
+            )
+
+            check_out = date.fromisoformat(
+                check_out_param
+            )
 
             nights = (
                 check_out - check_in
             ).days
 
-            with transaction.atomic():
+            if nights > 0:
 
-                locked_room = (
-                    Room.objects
-                    .select_for_update()
-                    .select_related("hotel")
-                    .get(id=room.id)
-                )
-
-                conflict = (
-                    Booking.objects
-                    .filter(
-                        room=locked_room,
-                        status__in=[
-                            "PENDING",
-                            "CONFIRMED",
-                        ],
-                        check_in__lt=check_out,
-                        check_out__gt=check_in,
-                    )
-                    .exists()
-                )
-
-                if conflict:
-
-                    messages.error(
-                        request,
-                        "This room is unavailable "
-                        "for those dates."
-                    )
-
-                    return redirect(
-                        "book_room",
-                        room_id=room.id,
-                    )
-
-                total = (
-                    locked_room.price_per_night
+                total_price = (
+                    room.price_per_night
                     * Decimal(nights)
                 )
 
-                try:
+        except ValueError:
 
-                    booking = Booking.objects.create(
-                        user=request.user,
-                        room=locked_room,
-                        check_in=check_in,
-                        check_out=check_out,
-                        total_price=total,
-                        status="CONFIRMED",
-                    )
+            check_in = None
+            check_out = None
 
-                except IntegrityError:
 
-                    messages.error(
-                        request,
-                        "Booking failed. Please try again."
-                    )
+    # ==================================================
+    # GET
+    # ==================================================
 
-                    return redirect(
-                        "book_room",
-                        room_id=room.id,
-                    )
+    if request.method == "GET":
 
-            return redirect(
-                "booking_success",
-                booking_id=booking.id,
+        form = BookingForm(
+            initial={
+                "check_in": check_in,
+                "check_out": check_out,
+            }
+        )
+
+        return render(
+            request,
+            "hotels/book_room.html",
+            {
+                "room": room,
+                "hotel": room.hotel,
+                "form": form,
+
+                "check_in": check_in,
+                "check_out": check_out,
+
+                "guests": guests,
+
+                "nights": nights,
+                "total_price": total_price,
+            },
+        )
+
+
+    # ==================================================
+    # POST
+    # ==================================================
+
+    form = BookingForm(
+        request.POST
+    )
+
+
+    if form.is_valid():
+
+        check_in = form.cleaned_data[
+            "check_in"
+        ]
+
+        check_out = form.cleaned_data[
+            "check_out"
+        ]
+
+        nights = (
+            check_out - check_in
+        ).days
+
+
+        with transaction.atomic():
+
+            locked_room = (
+                Room.objects
+                .select_for_update()
+                .select_related("hotel")
+                .get(id=room.id)
             )
 
-    else:
-        form = BookingForm()
+
+            # ------------------------------------------
+            # DOUBLE BOOKING CHECK
+            # ------------------------------------------
+
+            conflict = (
+                Booking.objects
+                .filter(
+                    room=locked_room,
+
+                    status__in=[
+                        "PENDING",
+                        "CONFIRMED",
+                    ],
+
+                    check_in__lt=check_out,
+
+                    check_out__gt=check_in,
+                )
+                .exists()
+            )
+
+
+            if conflict:
+
+                messages.error(
+                    request,
+                    "This room is unavailable "
+                    "for those dates."
+                )
+
+                return redirect(
+                    "book_room",
+                    room_id=room.id,
+                )
+
+
+            # ------------------------------------------
+            # TOTAL
+            # ------------------------------------------
+
+            total = (
+                locked_room.price_per_night
+                * Decimal(nights)
+            )
+
+
+            # ------------------------------------------
+            # CREATE BOOKING
+            # ------------------------------------------
+
+            try:
+
+                booking = Booking.objects.create(
+
+                    user=request.user,
+
+                    room=locked_room,
+
+                    check_in=check_in,
+
+                    check_out=check_out,
+
+                    guests=guests,
+
+                    total_price=total,
+
+                    status="CONFIRMED",
+                )
+
+            except IntegrityError:
+
+                messages.error(
+                    request,
+                    "Booking failed. Please try again."
+                )
+
+                return redirect(
+                    "book_room",
+                    room_id=room.id,
+                )
+
+
+        return redirect(
+            "booking_success",
+            booking_id=booking.id,
+        )
+
+
+    # ==================================================
+    # INVALID FORM
+    # ==================================================
 
     return render(
         request,
@@ -286,9 +537,33 @@ def book_room(request, room_id):
             "room": room,
             "hotel": room.hotel,
             "form": form,
+
+            "check_in": check_in,
+            "check_out": check_out,
+
+            "guests": guests,
+
+            "nights": None,
+            "total_price": None,
+        },
+    )    # --------------------------------------------------
+    # INVALID FORM
+    # --------------------------------------------------
+
+    return render(
+        request,
+        "hotels/book_room.html",
+        {
+            "room": room,
+            "hotel": room.hotel,
+            "form": form,
+            "check_in": request.POST.get("check_in"),
+            "check_out": request.POST.get("check_out"),
+            "guests": request.POST.get("guests", "1"),
+            "nights": None,
+            "total_price": None,
         },
     )
-
 
 @login_required
 def booking_success(request, booking_id):
