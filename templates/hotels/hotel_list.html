@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 
 {% block title %}Find your stay · StayGrid{% endblock %}
 
@@ -198,56 +199,55 @@
         color: var(--color-text-secondary);
     }
 
-    /* HOTEL GRID */
+    /* RESULT CARDS */
 
     .hotel-grid {
         display: grid;
         gap: 20px;
     }
 
-    /* HOTEL CARD */
+    /*
+        Search results use the same reusable hotel card
+        as the homepage. Image handling therefore stays
+        consistent everywhere.
+    */
 
-    .hotel-card {
+    .hotel-results .hotel-card {
         display: grid;
         grid-template-columns: 300px minmax(0, 1fr);
         background: var(--color-surface);
         border: 1px solid var(--color-border);
         border-radius: 18px;
         overflow: hidden;
-        transition:
-            transform 0.2s ease,
-            box-shadow 0.2s ease,
-            border-color 0.2s ease;
     }
 
-    .hotel-card:hover {
-        transform: translateY(-2px);
-        border-color: var(--color-accent-deep);
-        box-shadow: 0 14px 35px rgba(23, 23, 23, 0.07);
-    }
-
-    /* HOTEL IMAGE */
-
-    .hotel-card-image {
+    .hotel-results .hotel-card-image {
         position: relative;
+        width: 100%;
+        height: 300px;
         min-height: 300px;
-        background: var(--color-surface-soft);
         overflow: hidden;
+        display: block;
+        background: var(--color-surface-soft);
     }
 
-    .hotel-card-image img {
+    .hotel-results .hotel-card-image img {
+        display: block;
         width: 100%;
         height: 100%;
-        display: block;
+        min-width: 100%;
+        min-height: 100%;
         object-fit: cover;
-        transition: transform 0.55s ease;
+        object-position: center;
     }
 
-    .hotel-card:hover .hotel-card-image img {
-        transform: scale(1.035);
+    .hotel-results .hotel-card-overlay {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
     }
 
-    .hotel-card-image-placeholder {
+    .hotel-results .hotel-card-image-placeholder {
         width: 100%;
         height: 100%;
         min-height: 300px;
@@ -265,19 +265,7 @@
         text-transform: uppercase;
     }
 
-    .hotel-image-overlay {
-        position: absolute;
-        inset: 0;
-        background: linear-gradient(
-            to bottom,
-            rgba(0, 0, 0, 0.08),
-            transparent 35%,
-            rgba(0, 0, 0, 0.12)
-        );
-        pointer-events: none;
-    }
-
-    .hotel-image-rating {
+    .hotel-results .hotel-image-rating {
         position: absolute;
         top: 14px;
         left: 14px;
@@ -291,32 +279,16 @@
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.16);
     }
 
-    /* CARD BODY */
+    /* CONTENT */
 
-    .hotel-card-body {
+    .hotel-results .hotel-card-content {
         min-width: 0;
         padding: 24px;
         display: flex;
         flex-direction: column;
     }
 
-    .hotel-card-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 15px;
-        margin-bottom: 12px;
-    }
-
-    .hotel-card-location {
-        font-size: 12px;
-        color: var(--color-text-muted);
-        text-transform: uppercase;
-        letter-spacing: 0.08em;
-        font-weight: 700;
-    }
-
-    .hotel-card h3 {
+    .hotel-results .hotel-card-title {
         margin: 0;
         font-family: "Playfair Display", serif;
         font-size: 27px;
@@ -325,7 +297,35 @@
         color: var(--color-text);
     }
 
-    .hotel-card-description {
+    .hotel-results .hotel-card-title a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    .hotel-results .hotel-card-location {
+        font-size: 12px;
+        color: var(--color-text-muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 700;
+        margin: 10px 0 0;
+    }
+
+    .hotel-results .hotel-stay-score {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 22px;
+        font-size: 13px;
+        color: var(--color-text-secondary);
+    }
+
+    .hotel-results .hotel-stay-score strong {
+        color: var(--color-text);
+        font-size: 15px;
+    }
+
+    .hotel-results .hotel-card-description {
         margin: 10px 0 18px;
         max-width: 700px;
         color: var(--color-text-secondary);
@@ -333,46 +333,7 @@
         line-height: 1.65;
     }
 
-    .hotel-card-meta {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-bottom: 22px;
-    }
-
-    .hotel-meta-pill {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: var(--color-accent-soft);
-        border-radius: 999px;
-        padding: 7px 10px;
-        font-size: 12px;
-        color: var(--color-text);
-    }
-
-    .hotel-card-score {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        margin-bottom: 22px;
-        font-size: 13px;
-        color: var(--color-text-secondary);
-    }
-
-    .hotel-card-score strong {
-        color: var(--color-text);
-        font-size: 15px;
-    }
-
-    .hotel-score-dot {
-        width: 5px;
-        height: 5px;
-        border-radius: 50%;
-        background: var(--color-accent-deep);
-    }
-
-    .hotel-card-footer {
+    .hotel-results .hotel-card-bottom {
         display: flex;
         align-items: flex-end;
         justify-content: space-between;
@@ -382,14 +343,14 @@
         margin-top: auto;
     }
 
-    .hotel-card-price {
+    .hotel-results .hotel-card-price {
         display: flex;
         align-items: baseline;
         gap: 5px;
         flex-wrap: wrap;
     }
 
-    .hotel-card-price span {
+    .hotel-results .hotel-card-price span {
         width: 100%;
         font-size: 11px;
         color: var(--color-text-muted);
@@ -399,35 +360,18 @@
         margin-bottom: -1px;
     }
 
-    .hotel-card-price strong {
+    .hotel-results .hotel-card-price strong {
         font-size: 22px;
         color: var(--color-text);
     }
 
-    .hotel-card-price small {
+    .hotel-results .hotel-card-price small {
         font-size: 12px;
         color: var(--color-text-muted);
     }
 
-    .hotel-card-button {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-        text-decoration: none;
-        background: var(--color-dark);
-        color: white;
-        border-radius: 10px;
-        padding: 11px 17px;
-        font-size: 13px;
-        font-weight: 700;
+    .hotel-results .hotel-card .btn {
         white-space: nowrap;
-        transition: 0.2s ease;
-    }
-
-    .hotel-card-button:hover {
-        background: var(--color-dark-soft);
-        transform: translateX(2px);
     }
 
     /* EMPTY */
@@ -468,6 +412,7 @@
     /* MOBILE */
 
     @media (max-width: 900px) {
+
         .hotel-results-layout {
             grid-template-columns: 1fr;
         }
@@ -476,54 +421,57 @@
             position: static;
         }
 
-        .hotel-card {
+        .hotel-results .hotel-card {
             grid-template-columns: 240px minmax(0, 1fr);
         }
 
-        .hotel-card-image {
+        .hotel-results .hotel-card-image {
+            height: 280px;
             min-height: 280px;
         }
 
-        .hotel-card-image-placeholder {
+        .hotel-results .hotel-card-image-placeholder {
             min-height: 280px;
         }
     }
 
     @media (max-width: 700px) {
-        .hotel-card {
+
+        .hotel-results .hotel-card {
             grid-template-columns: 1fr;
         }
 
-        .hotel-card-image {
+        .hotel-results .hotel-card-image {
             height: 230px;
             min-height: 230px;
         }
 
-        .hotel-card-image-placeholder {
+        .hotel-results .hotel-card-image-placeholder {
             height: 230px;
             min-height: 230px;
         }
     }
 
     @media (max-width: 600px) {
+
         .hotel-list-page {
             padding: 35px 0 55px;
         }
 
-        .hotel-card-body {
+        .hotel-results .hotel-card-content {
             padding: 19px;
         }
 
-        .hotel-card h3 {
+        .hotel-results .hotel-card-title {
             font-size: 23px;
         }
 
-        .hotel-card-footer {
+        .hotel-results .hotel-card-bottom {
             align-items: stretch;
             flex-direction: column;
         }
 
-        .hotel-card-button {
+        .hotel-results .hotel-card-bottom .btn {
             width: 100%;
             box-sizing: border-box;
         }
@@ -539,7 +487,10 @@
 {% block content %}
 
 <main class="hotel-list-page">
+
     <div class="container">
+
+        <!-- HEADER -->
 
         <header class="hotel-list-header">
 
@@ -548,11 +499,13 @@
             </div>
 
             <h1>
+
                 {% if request.GET.location %}
                     Stays in {{ request.GET.location }}
                 {% else %}
                     Find your stay.
                 {% endif %}
+
             </h1>
 
             <p>
@@ -561,41 +514,62 @@
 
         </header>
 
+
         <div class="hotel-results-layout">
 
             <!-- FILTERS -->
+
             <aside class="hotel-filters">
 
                 <div class="filter-heading">
-                    <strong>Filter stays</strong>
-                    <span>⌕</span>
+
+                    <strong>
+                        Filter stays
+                    </strong>
+
+                    <span>
+                        ⌕
+                    </span>
+
                 </div>
+
 
                 <form method="get">
 
                     {% if request.GET.check_in %}
+
                         <input
                             type="hidden"
                             name="check_in"
                             value="{{ request.GET.check_in }}"
                         >
+
                     {% endif %}
 
+
                     {% if request.GET.check_out %}
+
                         <input
                             type="hidden"
                             name="check_out"
                             value="{{ request.GET.check_out }}"
                         >
+
                     {% endif %}
 
+
                     {% if request.GET.guests %}
+
                         <input
                             type="hidden"
                             name="guests"
                             value="{{ request.GET.guests }}"
                         >
+
                     {% endif %}
+
+
+                    <!-- DESTINATION -->
 
                     <div class="filter-group">
 
@@ -616,6 +590,9 @@
                         >
 
                     </div>
+
+
+                    <!-- PRICE -->
 
                     <div class="filter-group">
 
@@ -647,6 +624,9 @@
 
                     </div>
 
+
+                    <!-- RATING -->
+
                     <div class="filter-group">
 
                         <label class="filter-label">
@@ -662,6 +642,7 @@
                                 All
                             </a>
 
+
                             <a
                                 href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}&rating=5"
                                 class="rating-option {% if request.GET.rating == '5' %}active{% endif %}"
@@ -669,12 +650,14 @@
                                 ★ 5
                             </a>
 
+
                             <a
                                 href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}&rating=4"
                                 class="rating-option {% if request.GET.rating == '4' %}active{% endif %}"
                             >
                                 ★ 4+
                             </a>
+
 
                             <a
                                 href="?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|urlencode }}&min_price={{ request.GET.min_price|urlencode }}&max_price={{ request.GET.max_price|urlencode }}&rating=3"
@@ -687,6 +670,7 @@
 
                     </div>
 
+
                     <button
                         type="submit"
                         class="filter-button"
@@ -698,34 +682,53 @@
 
             </aside>
 
+
             <!-- RESULTS -->
+
             <section class="hotel-results">
 
                 <div class="results-toolbar">
 
                     <div class="results-count">
-                        <strong>{{ hotels|length }}</strong>
+
+                        <strong>
+                            {{ hotels|length }}
+                        </strong>
+
                         stay{{ hotels|length|pluralize }} found
+
                     </div>
+
 
                     <div class="search-context">
 
                         {% if request.GET.check_in and request.GET.check_out %}
+
                             <span class="context-pill">
-                                {{ request.GET.check_in }} → {{ request.GET.check_out }}
+                                {{ request.GET.check_in }}
+                                →
+                                {{ request.GET.check_out }}
                             </span>
+
                         {% endif %}
 
+
                         {% if request.GET.guests %}
+
                             <span class="context-pill">
+
                                 {{ request.GET.guests }}
+
                                 guest{{ request.GET.guests|pluralize }}
+
                             </span>
+
                         {% endif %}
 
                     </div>
 
                 </div>
+
 
                 {% if hotels %}
 
@@ -733,134 +736,7 @@
 
                         {% for hotel in hotels %}
 
-                            <article class="hotel-card">
-
-                                <!-- HOTEL IMAGE -->
-                                <div class="hotel-card-image">
-
-                                    {% with image=hotel.images.first %}
-
-                                        {% if image %}
-
-                                            <img
-                                                src="{{ image.image.url }}"
-                                                alt="{{ hotel.name }}"
-                                                loading="lazy"
-                                            >
-
-                                            <div class="hotel-image-overlay"></div>
-
-                                        {% else %}
-
-                                            <div class="hotel-card-image-placeholder">
-                                                StayGrid
-                                            </div>
-
-                                        {% endif %}
-
-                                    {% endwith %}
-
-                                    <div class="hotel-image-rating">
-                                        ★ {{ hotel.star_rating|floatformat:0 }}
-                                    </div>
-
-                                </div>
-
-                                <!-- HOTEL CONTENT -->
-                                <div class="hotel-card-body">
-
-                                    <div class="hotel-card-top">
-
-                                        <div class="hotel-card-location">
-                                            {{ hotel.location }}
-                                        </div>
-
-                                    </div>
-
-                                    <h3>
-                                        {{ hotel.name }}
-                                    </h3>
-
-                                    {% if hotel.description %}
-
-                                        <p class="hotel-card-description">
-                                            {{ hotel.description|truncatewords:24 }}
-                                        </p>
-
-                                    {% endif %}
-
-                                    <div class="hotel-card-meta">
-
-                                        <span class="hotel-meta-pill">
-
-                                            {% if hotel.review_count %}
-
-                                                ★ {{ hotel.review_average|floatformat:1 }}
-                                                · {{ hotel.review_count }}
-                                                review{{ hotel.review_count|pluralize }}
-
-                                            {% else %}
-
-                                                ★ {{ hotel.star_rating|floatformat:1 }}
-                                                · New stay
-
-                                            {% endif %}
-
-                                        </span>
-
-                                        {% if hotel.rooms.count %}
-
-                                            <span class="hotel-meta-pill">
-                                                {{ hotel.rooms.count }}
-                                                room{{ hotel.rooms.count|pluralize }}
-                                            </span>
-
-                                        {% endif %}
-
-                                    </div>
-
-                                    <div class="hotel-card-score">
-
-                                        <span class="hotel-score-dot"></span>
-
-                                        Stay Score ·
-
-                                        <strong>
-                                            {{ hotel.stay_score }}
-                                        </strong>
-
-                                    </div>
-
-                                    <div class="hotel-card-footer">
-
-                                        <div class="hotel-card-price">
-
-                                            <span>
-                                                From
-                                            </span>
-
-                                            <strong>
-                                                ₹{{ hotel.offer_price|floatformat:0 }}
-                                            </strong>
-
-                                            <small>
-                                                / night
-                                            </small>
-
-                                        </div>
-
-                                        <a
-                                            href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
-                                            class="hotel-card-button"
-                                        >
-                                            View stay →
-                                        </a>
-
-                                    </div>
-
-                                </div>
-
-                            </article>
+                            {% include "components/hotel_card.html" %}
 
                         {% endfor %}
 
@@ -892,6 +768,7 @@
         </div>
 
     </div>
+
 </main>
 
 {% endblock %}
