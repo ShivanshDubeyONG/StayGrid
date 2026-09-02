@@ -382,7 +382,7 @@
                 </p>
 
                 <a
-                    href="{% url 'hotel_list' %}"
+                    href="{% url 'hotel_detail' hotel.id %}?location={{ request.GET.location|urlencode }}&check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
                     class="btn btn-primary"
                 >
                     Show all stays

@@ -136,44 +136,21 @@ def hotel_list(request):
 
 
 def stay_score(hotel):
+    reviews = hotel.reviews.all()
 
-    rating = float(
-        hotel.review_average or hotel.star_rating
-    )
+    average_rating = reviews.aggregate(
+        avg=Avg("rating")
+    )["avg"] or 0
 
-    rating_score = (rating / 5) * 40
+    room_count = hotel.rooms.filter(is_active=True).count()
 
-    price = float(hotel.offer_price or 0)
+    rating_score = float(average_rating) * 20
 
-    if price <= 1500:
-        price_score = 30
-    elif price <= 2500:
-        price_score = 25
-    elif price <= 4000:
-        price_score = 18
-    else:
-        price_score = 10
+    room_score = min(room_count * 5, 15)
 
-    review_score = min(
-        (hotel.review_count or 0) * 1,
-        10
-    )
+    score = rating_score + room_score
 
-    availability_score = (
-        5 if hotel.rooms.filter(
-            is_active=True
-        ).exists()
-        else 0
-    )
-
-    return round(
-        rating_score
-        + price_score
-        + review_score
-        + availability_score,
-        1,
-    )
-
+    return round(min(score, 100), 1)
 
 @login_required
 def hotel_detail(request, hotel_id):

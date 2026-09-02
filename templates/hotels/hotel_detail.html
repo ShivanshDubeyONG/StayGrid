@@ -6,33 +6,27 @@
 {% endblock %}
 
 {% block extra_css %}
-    <link
-        rel="stylesheet"
-        href="{% static 'css/hotels.css' %}"
-    >
+<link
+    rel="stylesheet"
+    href="{% static 'css/hotels.css' %}"
+>
 {% endblock %}
 
 {% block content %}
 
 <main class="hotel-detail-page">
 
-    <!-- =====================================================
-         HERO
-         ===================================================== -->
-
+    <!-- HERO -->
     <section class="hotel-detail-hero">
 
         <div class="hotel-detail-hero-inner">
 
             <div class="hotel-detail-heading">
 
-                <span class="eyebrow">
-                    STAYGRID
-                </span>
-
                 <div class="hotel-title-row">
 
                     <div>
+                        <span class="eyebrow">STAY</span>
 
                         <h1>
                             {{ hotel.name }}
@@ -41,7 +35,6 @@
                         <p class="hotel-location">
                             {{ hotel.location }}
                         </p>
-
                     </div>
 
                     <div class="hotel-rating">
@@ -65,10 +58,7 @@
     </section>
 
 
-    <!-- =====================================================
-         HOTEL INFORMATION
-         ===================================================== -->
-
+    <!-- HOTEL INFORMATION -->
     <section class="hotel-detail-content">
 
         <div class="hotel-info-grid">
@@ -87,7 +77,6 @@
 
 
             <!-- STAY SCORE -->
-
             <div class="hotel-score-card">
 
                 <span class="eyebrow">
@@ -98,19 +87,37 @@
                     {{ stay_score }}
                 </strong>
 
-                <span class="hotel-score-caption">
-                    StayGrid ranking
-                </span>
-
             </div>
 
         </div>
 
 
-        <!-- =================================================
-             ROOMS
-             ================================================= -->
+        <!-- SELECTED STAY -->
+        {% if request.GET.check_in and request.GET.check_out %}
 
+        <div class="selected-stay">
+
+            <div>
+                <span>CHECK IN</span>
+                <strong>{{ request.GET.check_in }}</strong>
+            </div>
+
+            <div>
+                <span>CHECK OUT</span>
+                <strong>{{ request.GET.check_out }}</strong>
+            </div>
+
+            <div>
+                <span>GUESTS</span>
+                <strong>{{ request.GET.guests|default:"1" }}</strong>
+            </div>
+
+        </div>
+
+        {% endif %}
+
+
+        <!-- ROOMS -->
         <section class="rooms-section">
 
             <div class="section-heading">
@@ -134,59 +141,59 @@
 
                     {% with room=group.list.0 %}
 
-                        <article class="room-card">
+                    <article class="room-card">
 
-                            <div class="room-icon">
-                                ◇
-                            </div>
+                        <div class="room-icon">
+                            ◇
+                        </div>
 
 
-                            <div class="room-main">
+                        <div class="room-main">
 
-                                <span class="room-label">
-                                    ROOM TYPE
+                            <span class="room-label">
+                                ROOM TYPE
+                            </span>
+
+                            <h3>
+                                {{ room.get_room_type_display }}
+                            </h3>
+
+                            <p>
+                                Comfortable accommodation
+                                for your stay.
+                            </p>
+
+                        </div>
+
+
+                        <div class="room-action">
+
+                            <div class="room-price">
+
+                                <strong>
+                                    ₹{{ room.price_per_night|floatformat:0 }}
+                                </strong>
+
+                                <span>
+                                    / night
                                 </span>
 
-                                <h3>
-                                    {{ room.get_room_type_display }}
-                                </h3>
-
-                                <p>
-                                    Comfortable accommodation
-                                    for your stay.
-                                </p>
-
                             </div>
 
 
-                            <div class="room-action">
+                            <a
+                                href="{% url 'book_room' room.id %}?check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
+                                class="btn btn-primary"
+                            >
+                                Book
+                                <span aria-hidden="true">
+                                    →
+                                </span>
+                            </a>
 
-                                <div class="room-price">
+                        </div>
 
-                                    <strong>
-                                        ₹{{ room.price_per_night|floatformat:0 }}
-                                    </strong>
-
-                                    <span>
-                                        / night
-                                    </span>
-
-                                </div>
-
-
-                                <a
-                                    href="{% url 'book_room' room.id %}?check_in={{ request.GET.check_in|urlencode }}&check_out={{ request.GET.check_out|urlencode }}&guests={{ request.GET.guests|default:'1'|urlencode }}"
-                                    class="btn btn-primary"
-                                >
-                                    Book
-                                    <span aria-hidden="true">
-                                        →
-                                    </span>
-                                </a>
-
-                            </div>
-
-                        </article>
+                    </article>
 
                     {% endwith %}
 
@@ -211,10 +218,7 @@
         </section>
 
 
-        <!-- =================================================
-             REVIEWS
-             ================================================= -->
-
+        <!-- REVIEWS -->
         <section class="hotel-reviews">
 
             <div class="section-heading">
