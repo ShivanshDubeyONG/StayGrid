@@ -15,7 +15,23 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
-    execute_from_command_line(sys.argv)
+    try:
+        execute_from_command_line(sys.argv)
+    except Exception as exc:
+        msg = str(exc).lower()
+        if "migrate" in sys.argv and any(
+            k in msg for k in [
+                "failed to resolve host",
+                "name or service not known",
+                "getaddrinfo failed",
+            ]
+        ):
+            print(
+                f"\n[StayGrid Deploy Notice] Database host is an internal address not resolvable in the build container ({exc}).\n"
+                "[StayGrid Deploy Notice] Skipping build-time migration. Migrations will run at service startup.\n"
+            )
+            sys.exit(0)
+        raise
 
 
 if __name__ == '__main__':
