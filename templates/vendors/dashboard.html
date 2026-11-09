@@ -1,0 +1,159 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Vendor Dashboard · StayGrid{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/dashboard.css' %}">
+<style>
+    .vendor-nav-actions {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+    .hotel-status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        font-weight: 600;
+        padding: 4px 10px;
+        border-radius: 999px;
+    }
+    .hotel-status-badge.active {
+        background: #eef7ee;
+        color: #2e7d32;
+    }
+    .hotel-status-badge.inactive {
+        background: #fbf0f0;
+        color: #c62828;
+    }
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: currentColor;
+    }
+    .hotels-table-card {
+        background: var(--color-surface);
+        border: 1px solid var(--color-border);
+        border-radius: var(--radius-lg);
+        overflow: hidden;
+        margin-top: 24px;
+    }
+    .table-actions {
+        display: flex;
+        gap: 8px;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main class="dashboard-page">
+    <div class="container">
+
+        <header class="dashboard-header">
+            <div>
+                <span class="section-eyebrow">PARTNER PORTAL</span>
+                <h1>{{ vendor.business_name }}</h1>
+                <p>Manage your properties, monitor rooms, and track guest bookings.</p>
+            </div>
+            <div class="vendor-nav-actions">
+                <a href="{% url 'create_hotel' %}" class="btn btn-primary">+ Add Property</a>
+                <a href="{% url 'vendor_analytics' %}" class="btn btn-secondary">Analytics</a>
+                <a href="{% url 'vendor_bookings' %}" class="btn btn-secondary">All Bookings</a>
+            </div>
+        </header>
+
+        <section class="dashboard-stats">
+            <div class="stat-card">
+                <span class="stat-label">Total Properties</span>
+                <span class="stat-value">{{ hotels|length }}</span>
+                <span class="stat-change">Active in StayGrid</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Account Status</span>
+                <span class="stat-value" style="font-size: 1.4rem; padding-top: 6px;">
+                    {% if vendor.is_verified %}Verified Partner{% else %}In Review{% endif %}
+                </span>
+                <span class="stat-change" style="color: var(--color-text-muted);">
+                    {{ vendor.phone_number }}
+                </span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Total Bookings</span>
+                <span class="stat-value">{{ bookings.count|default:"0" }}</span>
+                <span class="stat-change"><a href="{% url 'vendor_bookings' %}" style="color: inherit; text-decoration: underline;">View details →</a></span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Quick Action</span>
+                <a href="{% url 'create_hotel' %}" class="btn btn-primary" style="margin-top: 14px; width: 100%; text-align: center;">New Listing</a>
+            </div>
+        </section>
+
+        <section class="hotels-table-card">
+            <div class="panel-header">
+                <h2>Listed Properties</h2>
+                <span>{{ hotels|length }} propert{{ hotels|length|pluralize:"y,ies" }}</span>
+            </div>
+
+            {% if hotels %}
+                <div style="overflow-x: auto;">
+                    <table class="dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Property Name</th>
+                                <th>Location</th>
+                                <th>Rating</th>
+                                <th>Offer Price</th>
+                                <th>Rooms</th>
+                                <th>Status</th>
+                                <th style="text-align: right;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for hotel in hotels %}
+                                <tr>
+                                    <td>
+                                        <strong>{{ hotel.name }}</strong>
+                                    </td>
+                                    <td>{{ hotel.location }}</td>
+                                    <td>★ {{ hotel.star_rating }}</td>
+                                    <td>₹{{ hotel.offer_price|floatformat:0 }}</td>
+                                    <td>{{ hotel.room_count|default:"0" }} rooms</td>
+                                    <td>
+                                        {% if hotel.is_active %}
+                                            <span class="hotel-status-badge active">
+                                                <span class="status-dot"></span> Active
+                                            </span>
+                                        {% else %}
+                                            <span class="hotel-status-badge inactive">
+                                                <span class="status-dot"></span> Inactive
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td style="text-align: right;">
+                                        <div class="table-actions" style="justify-content: flex-end;">
+                                            <a href="{% url 'manage_hotel' hotel.id %}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Manage Rooms</a>
+                                            <a href="{% url 'edit_hotel' hotel.id %}" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Edit</a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="panel-body">
+                    <div class="empty-state">
+                        <h3>No properties listed yet</h3>
+                        <p>Get started by listing your first hotel or resort on StayGrid.</p>
+                        <a href="{% url 'create_hotel' %}" class="btn btn-primary">+ Add Your First Hotel</a>
+                    </div>
+                </div>
+            {% endif %}
+        </section>
+
+    </div>
+</main>
+{% endblock %}

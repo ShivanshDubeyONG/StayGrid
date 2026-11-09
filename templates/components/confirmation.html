@@ -1,0 +1,18 @@
+<div class="modal-backdrop" id="{{ confirm_id|default:'confirm-modal' }}" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal-card">
+        <header class="modal-header">
+            <h3>{{ confirm_title|default:'Confirm Action' }}</h3>
+            <button type="button" class="modal-close" data-modal-close aria-label="Close modal">×</button>
+        </header>
+        <div class="modal-body">
+            <p>{{ confirm_message|default:'Are you sure you want to proceed?' }}</p>
+        </div>
+        <footer class="modal-footer" style="display: flex; justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn btn-secondary" data-modal-close>Cancel</button>
+            <form method="POST" action="{{ confirm_action_url }}" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" style="background: #c62828; border-color: #c62828;">Confirm</button>
+            </form>
+        </footer>
+    </div>
+</div>

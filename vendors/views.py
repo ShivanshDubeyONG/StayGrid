@@ -11,7 +11,7 @@ from hotels.models import Booking
 
 def vendor_register(request):
 
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and hasattr(request.user, "vendor_profile"):
         return redirect("vendor_dashboard")
 
     if request.method == "POST":
