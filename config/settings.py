@@ -24,10 +24,26 @@ ALLOWED_HOSTS = [
     host.strip()
     for host in os.getenv(
         "ALLOWED_HOSTS",
-        "localhost,127.0.0.1"
+        "localhost,127.0.0.1,.onrender.com"
     ).split(",")
     if host.strip()
 ]
+
+# Ensure Render domains are always allowed
+RENDER_EXTERNAL_HOSTNAME = os.getenv("RENDER_EXTERNAL_HOSTNAME")
+if RENDER_EXTERNAL_HOSTNAME and RENDER_EXTERNAL_HOSTNAME not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
+if ".onrender.com" not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append(".onrender.com")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.onrender.com",
+    "http://localhost",
+    "http://127.0.0.1",
+]
+if RENDER_EXTERNAL_HOSTNAME:
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
 
 
 # =========================================================
@@ -94,24 +110,51 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # =========================================================
 
+DB_USER = os.getenv("DB_USER", "postgres")
+DB_PASSWORD = os.getenv("DB_PASSWORD", "")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = os.getenv("DB_PORT", "5432")
+DB_NAME = os.getenv("DB_NAME", "staygrid")
+
 DB_SSL_REQUIRE = os.getenv(
     "DB_SSL_REQUIRE",
-    "true" if (not DEBUG and os.getenv("DB_HOST", "localhost") not in ("localhost", "127.0.0.1")) else "false"
+    "true" if (not DEBUG and DB_HOST not in ("localhost", "127.0.0.1")) else "false"
 ).lower() == "true"
 
 DATABASES = {
     "default": dj_database_url.config(
         default=(
             f"postgresql://"
-            f"{os.getenv('DB_USER')}:"
-            f"{os.getenv('DB_PASSWORD')}@"
-            f"{os.getenv('DB_HOST')}:"
-            f"{os.getenv('DB_PORT')}/"
-            f"{os.getenv('DB_NAME')}"
+            f"{DB_USER}:"
+            f"{DB_PASSWORD}@"
+            f"{DB_HOST}:"
+            f"{DB_PORT}/"
+            f"{DB_NAME}"
         ),
         conn_max_age=600,
         ssl_require=DB_SSL_REQUIRE,
     )
+}
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+        },
+    },
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
+    "loggers": {
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": False,
+        },
+    },
 }
 
 

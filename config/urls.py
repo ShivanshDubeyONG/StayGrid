@@ -8,14 +8,17 @@ from hotels.models import Hotel
 
 
 def home(request):
-    featured_hotels = (
-        Hotel.objects
-        .filter(is_active=True)
-        .prefetch_related("images")
-        .order_by("-created_at")[:6]
-    )
-
-    hotel_count = Hotel.objects.filter(is_active=True).count()
+    try:
+        featured_hotels = list(
+            Hotel.objects
+            .filter(is_active=True)
+            .prefetch_related("images")
+            .order_by("-created_at")[:6]
+        )
+        hotel_count = Hotel.objects.filter(is_active=True).count()
+    except Exception:
+        featured_hotels = []
+        hotel_count = 0
 
     return render(
         request,
