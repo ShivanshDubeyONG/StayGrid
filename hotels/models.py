@@ -58,6 +58,14 @@ class Hotel(models.Model):
         auto_now=True
     )
 
+    class Meta:
+        indexes = [
+            models.Index(fields=["is_active", "-created_at"]),
+            models.Index(fields=["location"]),
+            models.Index(fields=["offer_price"]),
+            models.Index(fields=["star_rating"]),
+        ]
+
     def __str__(self):
         return self.name
 
@@ -180,6 +188,10 @@ class Booking(models.Model):
                 name="checkout_after_checkin"
             )
         ]
+        indexes = [
+            models.Index(fields=["user", "-created_at"]),
+            models.Index(fields=["room", "status", "check_in", "check_out"]),
+        ]
 
     def __str__(self):
         return (
@@ -221,6 +233,9 @@ class Review(models.Model):
                 fields=["user", "hotel"],
                 name="one_review_per_user_per_hotel"
             )
+        ]
+        indexes = [
+            models.Index(fields=["hotel", "-created_at"]),
         ]
 
     def __str__(self):

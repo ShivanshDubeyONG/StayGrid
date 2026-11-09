@@ -1,10 +1,9 @@
 from datetime import datetime
 from decimal import Decimal
-from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError, transaction
-from django.db.models import Avg, Count, Sum, Q
+from django.db.models import Avg, Count, Max, Min, Q, Sum
 from django.shortcuts import (
     get_object_or_404,
     redirect,
@@ -28,7 +27,6 @@ from .models import (
 
 
 def get_vendor(user):
-
     try:
         return user.vendor_profile
     except Exception:
@@ -79,14 +77,10 @@ def hotel_list(request):
         messages.error(request, "Please select a valid number of guests.")
         return redirect("home")
 
-    # YOUR EXISTING HOTEL FILTERING CODE STARTS HERE
-    # Search is mandatory before browsing stays
-    if not location or not check_in or not check_out or not guests:
-        return redirect("home")
-
     hotels = Hotel.objects.filter(
         is_active=True
     ).prefetch_related("images")
+
     if location:
         hotels = hotels.filter(location__icontains=location)
 
@@ -108,10 +102,24 @@ def hotel_list(request):
         review_count=Count("reviews"),
     )
 
+    price_bounds = Hotel.objects.filter(
+        is_active=True,
+        offer_price__gt=0,
+    ).aggregate(
+        min_p=Min("offer_price"),
+        max_p=Max("offer_price"),
+    )
+    global_min = float(price_bounds["min_p"] or 0)
+    global_max = float(price_bounds["max_p"] or 0)
+
     hotels = list(hotels)
 
     for hotel in hotels:
-        hotel.stay_score = stay_score(hotel)
+        hotel.stay_score = stay_score(
+            hotel,
+            min_price=global_min,
+            max_price=global_max,
+        )
 
     hotels.sort(
         key=lambda hotel: hotel.stay_score,
@@ -130,7 +138,7 @@ def hotel_list(request):
     )
 
 
-def stay_score(hotel):
+def stay_score(hotel, min_price=None, max_price=None):
     """
     StayGrid score out of 100.
 
@@ -146,41 +154,27 @@ def stay_score(hotel):
     # --------------------------------------------------
 
     star_rating = float(hotel.star_rating or 0)
-
     star_score = (star_rating / 5) * 40
-
 
     # --------------------------------------------------
     # GUEST REVIEWS — 35 POINTS
     # --------------------------------------------------
 
-    average_rating = getattr(
-        hotel,
-        "review_average",
-        None,
-    )
-
-    review_count = getattr(
-        hotel,
-        "review_count",
-        None,
-    )
-
-    if average_rating is None:
+    if hasattr(hotel, "review_average") and hotel.review_average is not None:
+        average_rating = float(hotel.review_average)
+        review_count = int(getattr(hotel, "review_count", 0) or 0)
+    elif hasattr(hotel, "review_count") and hotel.review_count == 0:
+        average_rating = 0.0
+        review_count = 0
+    else:
         review_data = hotel.reviews.aggregate(
             average=Avg("rating"),
             count=Count("id"),
         )
+        average_rating = float(review_data["average"] or 0)
+        review_count = int(review_data["count"] or 0)
 
-        average_rating = review_data["average"] or 0
-        review_count = review_data["count"] or 0
-
-    else:
-        average_rating = float(average_rating or 0)
-        review_count = int(review_count or 0)
-
-    review_score = (float(average_rating) / 5) * 35
-
+    review_score = (average_rating / 5) * 35
 
     # --------------------------------------------------
     # REVIEW COUNT — 10 POINTS
@@ -188,25 +182,24 @@ def stay_score(hotel):
 
     review_count_score = min(review_count, 10)
 
-
     # --------------------------------------------------
     # PRICE VALUE — 15 POINTS
     # --------------------------------------------------
 
-    prices = list(
-        Hotel.objects
-        .filter(
+    if min_price is None or max_price is None:
+        price_stats = Hotel.objects.filter(
             is_active=True,
             offer_price__gt=0,
+        ).aggregate(
+            min_p=Min("offer_price"),
+            max_p=Max("offer_price"),
         )
-        .values_list("offer_price", flat=True)
-    )
+        min_price = float(price_stats["min_p"] or 0)
+        max_price = float(price_stats["max_p"] or 0)
 
     price_score = 0
 
-    if prices and hotel.offer_price:
-        min_price = float(min(prices))
-        max_price = float(max(prices))
+    if hotel.offer_price and max_price > 0:
         hotel_price = float(hotel.offer_price)
 
         if max_price > min_price:
@@ -216,7 +209,6 @@ def stay_score(hotel):
             ) * 15
         else:
             price_score = 15
-
 
     # --------------------------------------------------
     # FINAL SCORE
@@ -234,10 +226,11 @@ def stay_score(hotel):
         1,
     )
 
+
 @login_required
 def hotel_detail(request, hotel_id):
     hotel = get_object_or_404(
-        Hotel.objects.prefetch_related("rooms", "reviews"),
+        Hotel.objects.prefetch_related("images"),
         pk=hotel_id,
         is_active=True,
     )
@@ -248,11 +241,19 @@ def hotel_detail(request, hotel_id):
         .order_by("room_type", "price_per_night")
     )
 
-    reviews = hotel.reviews.all().order_by("-created_at")
+    reviews = (
+        hotel.reviews
+        .select_related("user")
+        .order_by("-created_at")
+    )
 
-    average_rating = reviews.aggregate(
-        avg=Avg("rating")
-    )["avg"] or 0
+    review_stats = reviews.aggregate(
+        avg=Avg("rating"),
+        count=Count("id"),
+    )
+    average_rating = review_stats["avg"] or 0
+    hotel.review_average = average_rating
+    hotel.review_count = review_stats["count"] or 0
 
     return render(
         request,

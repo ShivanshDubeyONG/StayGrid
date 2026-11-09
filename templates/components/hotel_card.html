@@ -8,7 +8,7 @@
         aria-label="View {{ hotel.name }}"
     >
 
-        {% with image=hotel.images.first %}
+        {% with image=hotel.images.all.0 %}
 
             {% if image %}
 

@@ -11,6 +11,7 @@ class VendorProfileAdmin(admin.ModelAdmin):
         "phone_number",
         "is_verified",
     )
+    list_select_related = ("user",)
     list_filter = (
         "is_verified",
     )

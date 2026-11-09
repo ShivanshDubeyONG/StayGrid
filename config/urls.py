@@ -8,23 +8,21 @@ from hotels.models import Hotel
 
 
 def home(request):
-
-    hotels = (
+    featured_hotels = (
         Hotel.objects
         .filter(is_active=True)
-        .prefetch_related("images", "rooms")
-        .order_by("-created_at")
+        .prefetch_related("images")
+        .order_by("-created_at")[:6]
     )
 
-    featured_hotels = hotels[:6]
+    hotel_count = Hotel.objects.filter(is_active=True).count()
 
     return render(
         request,
         "home/home.html",
         {
-            "hotels": hotels,
             "featured_hotels": featured_hotels,
-            "hotel_count": hotels.count(),
+            "hotel_count": hotel_count,
         },
     )
 

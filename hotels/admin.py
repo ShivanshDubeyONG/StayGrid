@@ -37,6 +37,8 @@ class HotelAdmin(admin.ModelAdmin):
         "created_at",
     )
 
+    list_select_related = ("owner",)
+
     list_filter = (
         "is_active",
         "star_rating",
@@ -67,6 +69,8 @@ class RoomAdmin(admin.ModelAdmin):
         "is_active",
     )
 
+    list_select_related = ("hotel",)
+
     list_filter = (
         "room_type",
         "is_active",
@@ -90,6 +94,8 @@ class BookingAdmin(admin.ModelAdmin):
         "created_at",
     )
 
+    list_select_related = ("user", "room", "room__hotel")
+
     list_filter = (
         "status",
         "check_in",
@@ -112,6 +118,8 @@ class ReviewAdmin(admin.ModelAdmin):
         "rating",
         "created_at",
     )
+
+    list_select_related = ("hotel", "user")
 
     list_filter = (
         "rating",

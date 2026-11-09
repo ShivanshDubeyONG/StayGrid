@@ -85,7 +85,7 @@
 
             <article>
 
-                {% with first_image=hotel.images.first %}
+                {% with first_image=hotel.images.all.0 %}
 
                     {% if first_image %}
                         <img
