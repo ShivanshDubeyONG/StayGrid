@@ -1,6 +1,8 @@
 from django.urls import path
 
 from . import views
+from hotels.views import vendor_analytics
+
 
 urlpatterns = [
 
@@ -36,10 +38,7 @@ urlpatterns = [
 
     path(
         "analytics/",
-        __import__(
-            "hotels.views",
-            fromlist=["vendor_analytics"]
-        ).vendor_analytics,
+        vendor_analytics,
         name="vendor_analytics",
     ),
 ]

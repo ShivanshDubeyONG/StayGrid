@@ -164,6 +164,10 @@ def login_view(request):
             user
         )
 
+        next_url = request.POST.get("next") or request.GET.get("next")
+        if next_url and next_url.startswith("/") and not next_url.startswith("//"):
+            return redirect(next_url)
+
         return redirect("home")
 
     return render(
@@ -215,6 +219,13 @@ def profile(request):
             "phone_number",
             ""
         ).strip()
+
+        if email and User.objects.filter(email=email).exclude(pk=request.user.pk).exists():
+            messages.error(
+                request,
+                "That email address is already in use."
+            )
+            return redirect("profile")
 
         if first_name:
             request.user.first_name = first_name

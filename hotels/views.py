@@ -509,33 +509,14 @@ def book_room(request, room_id):
             "room": room,
             "hotel": room.hotel,
             "form": form,
-
-            "check_in": check_in,
-            "check_out": check_out,
-
+            "check_in": check_in or request.POST.get("check_in"),
+            "check_out": check_out or request.POST.get("check_out"),
             "guests": guests,
-
-            "nights": None,
-            "total_price": None,
-        },
-    )    # --------------------------------------------------
-    # INVALID FORM
-    # --------------------------------------------------
-
-    return render(
-        request,
-        "hotels/book_room.html",
-        {
-            "room": room,
-            "hotel": room.hotel,
-            "form": form,
-            "check_in": request.POST.get("check_in"),
-            "check_out": request.POST.get("check_out"),
-            "guests": request.POST.get("guests", "1"),
             "nights": None,
             "total_price": None,
         },
     )
+
 
 @login_required
 def booking_success(request, booking_id):
@@ -558,6 +539,7 @@ def booking_success(request, booking_id):
     )
 
 
+@login_required
 def my_bookings(request):
     bookings = Booking.objects.filter(
         user=request.user

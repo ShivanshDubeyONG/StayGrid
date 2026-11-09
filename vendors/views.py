@@ -2,6 +2,7 @@ from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.db.models import Count
 from django.shortcuts import redirect, render
 
 from .models import VendorProfile
@@ -85,6 +86,15 @@ def vendor_register(request):
 
 def vendor_login(request):
 
+    if request.user.is_authenticated:
+        if hasattr(request.user, "vendor_profile"):
+            return redirect("vendor_dashboard")
+        messages.error(
+            request,
+            "This account is not registered as a vendor."
+        )
+        return redirect("home")
+
     if request.method == "POST":
 
         username = request.POST.get(
@@ -144,12 +154,26 @@ def vendor_logout(request):
 @login_required
 def vendor_dashboard(request):
 
-    vendor = request.user.vendor_profile
+    try:
+        vendor = request.user.vendor_profile
+    except VendorProfile.DoesNotExist:
+        messages.error(
+            request,
+            "You need a vendor account to access the dashboard."
+        )
+        return redirect("vendor_register")
 
-    hotels = vendor.hotels.all()
+    hotels = (
+        vendor.hotels
+        .annotate(room_count=Count("rooms"))
+        .order_by("-created_at")
+    )
 
-    bookings = Booking.objects.filter(
-        room__hotel__owner=vendor
+    bookings = (
+        Booking.objects
+        .filter(room__hotel__owner=vendor)
+        .select_related("room", "room__hotel")
+        .order_by("-created_at")
     )
 
     return render(
@@ -166,7 +190,14 @@ def vendor_dashboard(request):
 @login_required
 def vendor_bookings(request):
 
-    vendor = request.user.vendor_profile
+    try:
+        vendor = request.user.vendor_profile
+    except VendorProfile.DoesNotExist:
+        messages.error(
+            request,
+            "You need a vendor account to view bookings."
+        )
+        return redirect("vendor_login")
 
     bookings = (
         Booking.objects

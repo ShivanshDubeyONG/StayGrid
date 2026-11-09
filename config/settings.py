@@ -94,6 +94,11 @@ WSGI_APPLICATION = "config.wsgi.application"
 # DATABASE
 # =========================================================
 
+DB_SSL_REQUIRE = os.getenv(
+    "DB_SSL_REQUIRE",
+    "true" if (not DEBUG and os.getenv("DB_HOST", "localhost") not in ("localhost", "127.0.0.1")) else "false"
+).lower() == "true"
+
 DATABASES = {
     "default": dj_database_url.config(
         default=(
@@ -105,7 +110,7 @@ DATABASES = {
             f"{os.getenv('DB_NAME')}"
         ),
         conn_max_age=600,
-        ssl_require=not DEBUG,
+        ssl_require=DB_SSL_REQUIRE,
     )
 }
 
@@ -167,9 +172,14 @@ STATICFILES_DIRS = [
 
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-STATICFILES_STORAGE = (
-    "whitenoise.storage.CompressedManifestStaticFilesStorage"
-)
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
+    },
+}
 
 
 # =========================================================
