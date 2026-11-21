@@ -1,0 +1,67 @@
+name: StayGrid CI
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  test:
+    name: Test & Validate
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: staygrid
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgrespassword
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    env:
+      SECRET_KEY: ci-test-key-for-django-github-actions-suite
+      DEBUG: "True"
+      DB_NAME: staygrid
+      DB_USER: postgres
+      DB_PASSWORD: postgrespassword
+      DB_HOST: localhost
+      DB_PORT: "5432"
+      DB_SSL_REQUIRE: "false"
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+          cache: 'pip'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Django System Check
+        run: |
+          python manage.py check
+
+      - name: Run Database Migrations
+        run: |
+          python manage.py migrate --noinput
+
+      - name: System Health Check
+        run: |
+          python manage.py health_check
+
+      - name: Run Automated Test Suite
+        run: |
+          python manage.py test --verbosity=2
