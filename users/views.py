@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 
 from .models import CustomerProfile
+from .utils import normalize_phone_number
 
 
 def register(request):
@@ -34,10 +35,12 @@ def register(request):
             ""
         ).strip()
 
-        phone = request.POST.get(
-            "phone_number",
-            ""
-        ).strip()
+        phone = normalize_phone_number(
+            request.POST.get(
+                "phone_number",
+                ""
+            )
+        )
 
         password = request.POST.get(
             "password",
@@ -215,10 +218,12 @@ def profile(request):
             ""
         ).strip()
 
-        phone = request.POST.get(
-            "phone_number",
-            ""
-        ).strip()
+        phone = normalize_phone_number(
+            request.POST.get(
+                "phone_number",
+                ""
+            )
+        )
 
         if email and User.objects.filter(email=email).exclude(pk=request.user.pk).exists():
             messages.error(

@@ -25,6 +25,13 @@ from .models import (
     Room,
 )
 
+from .services import (
+    calculate_stay_score,
+    stay_score,
+    create_room_booking,
+    get_vendor_analytics,
+)
+
 
 def get_vendor(user):
     try:
@@ -135,95 +142,6 @@ def hotel_list(request):
             "check_out": check_out,
             "guests": guests,
         },
-    )
-
-
-def stay_score(hotel, min_price=None, max_price=None):
-    """
-    StayGrid score out of 100.
-
-    Factors:
-    - Hotel star rating: 40%
-    - Guest reviews: 35%
-    - Number of reviews: 10%
-    - Price value: 15%
-    """
-
-    # --------------------------------------------------
-    # STAR RATING — 40 POINTS
-    # --------------------------------------------------
-
-    star_rating = float(hotel.star_rating or 0)
-    star_score = (star_rating / 5) * 40
-
-    # --------------------------------------------------
-    # GUEST REVIEWS — 35 POINTS
-    # --------------------------------------------------
-
-    if hasattr(hotel, "review_average") and hotel.review_average is not None:
-        average_rating = float(hotel.review_average)
-        review_count = int(getattr(hotel, "review_count", 0) or 0)
-    elif hasattr(hotel, "review_count") and hotel.review_count == 0:
-        average_rating = 0.0
-        review_count = 0
-    else:
-        review_data = hotel.reviews.aggregate(
-            average=Avg("rating"),
-            count=Count("id"),
-        )
-        average_rating = float(review_data["average"] or 0)
-        review_count = int(review_data["count"] or 0)
-
-    review_score = (average_rating / 5) * 35
-
-    # --------------------------------------------------
-    # REVIEW COUNT — 10 POINTS
-    # --------------------------------------------------
-
-    review_count_score = min(review_count, 10)
-
-    # --------------------------------------------------
-    # PRICE VALUE — 15 POINTS
-    # --------------------------------------------------
-
-    if min_price is None or max_price is None:
-        price_stats = Hotel.objects.filter(
-            is_active=True,
-            offer_price__gt=0,
-        ).aggregate(
-            min_p=Min("offer_price"),
-            max_p=Max("offer_price"),
-        )
-        min_price = float(price_stats["min_p"] or 0)
-        max_price = float(price_stats["max_p"] or 0)
-
-    price_score = 0
-
-    if hotel.offer_price and max_price > 0:
-        hotel_price = float(hotel.offer_price)
-
-        if max_price > min_price:
-            price_score = (
-                (max_price - hotel_price)
-                / (max_price - min_price)
-            ) * 15
-        else:
-            price_score = 15
-
-    # --------------------------------------------------
-    # FINAL SCORE
-    # --------------------------------------------------
-
-    score = (
-        star_score
-        + review_score
-        + review_count_score
-        + price_score
-    )
-
-    return round(
-        min(score, 100),
-        1,
     )
 
 
@@ -386,111 +304,35 @@ def book_room(request, room_id):
 
 
     if form.is_valid():
+        check_in = form.cleaned_data["check_in"]
+        check_out = form.cleaned_data["check_out"]
 
-        check_in = form.cleaned_data[
-            "check_in"
-        ]
-
-        check_out = form.cleaned_data[
-            "check_out"
-        ]
-
-        nights = (
-            check_out - check_in
-        ).days
-
-
-        with transaction.atomic():
-
-            locked_room = (
-                Room.objects
-                .select_for_update()
-                .select_related("hotel")
-                .get(id=room.id)
+        try:
+            booking = create_room_booking(
+                user=request.user,
+                room_id=room.id,
+                check_in=check_in,
+                check_out=check_out,
+                guests=guests,
             )
-
-
-            # ------------------------------------------
-            # DOUBLE BOOKING CHECK
-            # ------------------------------------------
-
-            conflict = (
-                Booking.objects
-                .filter(
-                    room=locked_room,
-
-                    status__in=[
-                        "PENDING",
-                        "CONFIRMED",
-                    ],
-
-                    check_in__lt=check_out,
-
-                    check_out__gt=check_in,
-                )
-                .exists()
+        except ValueError as err:
+            messages.error(
+                request,
+                "This room is unavailable for those dates."
             )
-
-
-            if conflict:
-
-                messages.error(
-                    request,
-                    "This room is unavailable "
-                    "for those dates."
-                )
-
-                return redirect(
-                    "book_room",
-                    room_id=room.id,
-                )
-
-
-            # ------------------------------------------
-            # TOTAL
-            # ------------------------------------------
-
-            total = (
-                locked_room.price_per_night
-                * Decimal(nights)
+            return redirect(
+                "book_room",
+                room_id=room.id,
             )
-
-
-            # ------------------------------------------
-            # CREATE BOOKING
-            # ------------------------------------------
-
-            try:
-
-                booking = Booking.objects.create(
-
-                    user=request.user,
-
-                    room=locked_room,
-
-                    check_in=check_in,
-
-                    check_out=check_out,
-
-                    guests=guests,
-
-                    total_price=total,
-
-                    status="CONFIRMED",
-                )
-
-            except IntegrityError:
-
-                messages.error(
-                    request,
-                    "Booking failed. Please try again."
-                )
-
-                return redirect(
-                    "book_room",
-                    room_id=room.id,
-                )
-
+        except IntegrityError:
+            messages.error(
+                request,
+                "Booking failed. Please try again."
+            )
+            return redirect(
+                "book_room",
+                room_id=room.id,
+            )
 
         return redirect(
             "booking_success",
@@ -922,69 +764,15 @@ def delete_room(request, room_id):
 
 @login_required
 def vendor_analytics(request):
-
     vendor = get_vendor(request.user)
 
     if vendor is None:
         return redirect("home")
 
-    hotels = vendor.hotels.all()
-
-    bookings = Booking.objects.filter(
-        room__hotel__owner=vendor,
-        status__in=[
-            "CONFIRMED",
-            "COMPLETED",
-        ],
-    )
-
-    total_revenue = bookings.aggregate(
-        total=Sum("total_price")
-    )["total"] or Decimal("0")
-
-    total_bookings = bookings.count()
-
-    total_rooms = Room.objects.filter(
-        hotel__owner=vendor,
-        is_active=True,
-    ).count()
-
-    occupied_rooms = bookings.values(
-        "room"
-    ).distinct().count()
-
-    occupancy = (
-        (occupied_rooms / total_rooms) * 100
-        if total_rooms
-        else 0
-    )
-
-    top_hotel = (
-        hotels
-        .annotate(
-            booking_count=Count(
-                "rooms__bookings",
-                filter=Q(
-                    rooms__bookings__status__in=[
-                        "CONFIRMED",
-                        "COMPLETED",
-                    ]
-                ),
-            )
-        )
-        .order_by("-booking_count")
-        .first()
-    )
+    context = get_vendor_analytics(vendor)
 
     return render(
         request,
         "vendors/analytics.html",
-        {
-            "hotels": hotels,
-            "total_revenue": total_revenue,
-            "total_bookings": total_bookings,
-            "total_rooms": total_rooms,
-            "occupancy": round(occupancy, 1),
-            "top_hotel": top_hotel,
-        },
+        context,
     )
