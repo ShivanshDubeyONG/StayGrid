@@ -62,6 +62,11 @@ jobs:
         run: |
           python manage.py health_check
 
+      - name: Collect Static Assets
+        run: |
+          python manage.py collectstatic --noinput
+
       - name: Run Automated Test Suite
         run: |
           python manage.py test --verbosity=2
+
